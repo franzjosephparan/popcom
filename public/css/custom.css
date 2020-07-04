@@ -1,0 +1,248 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+}
+
+.popcom-logo,
+.mobile-illustration {
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.main {
+    height: 100vh;
+    overflow: hidden;
+}
+
+.main .content-wrapper {
+    -webkit-transform: translateY(-1.5rem);
+    transform: translateY(-1.5rem);
+    z-index: 2;
+}
+
+.main .content-wrapper > .popcom-logo {
+    display: block;
+    margin: 0 auto;
+    width: 75%;
+}
+
+.main .content-wrapper .columns-wrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+.main .content-wrapper .columns-wrapper .left-col .popcom-logo {
+    display: none;
+}
+
+.main .content-wrapper .columns-wrapper .left-col .playstore-btn,
+.main .content-wrapper .columns-wrapper .left-col .api-btn {
+    display: block;
+    margin: 0 auto;
+    min-width: 167px;
+    max-width: 167px;
+}
+
+.main .content-wrapper .columns-wrapper .left-col .playstore-btn {
+    background-color: #000000;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    margin-bottom: 0.5rem;
+    height: 37px;
+}
+
+.main .content-wrapper .columns-wrapper .left-col .api-btn {
+    border: 2px solid #043D10;
+    color: #043D10;
+    font-weight: 700;
+    font-size: 14px;
+    background-color: #ffffff;
+    -webkit-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+
+.main .content-wrapper .columns-wrapper .left-col .api-btn:hover {
+    background-color: #043D10;
+    color: #ffffff;
+}
+
+.main .content-wrapper .columns-wrapper .right-col .mobile-illustration {
+    display: block;
+    width: 55%;
+    margin: 2rem auto;
+}
+
+.svg-bg {
+    height: 30%;
+    width: 115%;
+    position: fixed;
+    bottom: 0;
+    z-index: 1;
+}
+
+footer {
+    padding: 0.5rem;
+    color: #ffffff;
+    text-align: center;
+    font-size: 0.75rem;
+    height: 11.5%;
+}
+
+@media (min-width: 768px) and (min-height: 768px) {
+    .svg-bg {
+        height: 63%;
+        width: 110%;
+    }
+}
+
+@media (min-width: 768px) {
+    .main .content-wrapper {
+        -webkit-transform: translateY(-5rem);
+        transform: translateY(-5rem);
+    }
+    .main .content-wrapper > .popcom-logo {
+        display: none;
+    }
+    .main .content-wrapper .columns-wrapper {
+        position: relative;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+        flex-direction: row;
+    }
+    .main .content-wrapper .columns-wrapper .left-col,
+    .main .content-wrapper .columns-wrapper .right-col {
+        -webkit-box-ordinal-group: unset;
+        -ms-flex-order: unset;
+        order: unset;
+    }
+    .main .content-wrapper .columns-wrapper .left-col .popcom-logo {
+        display: block;
+        width: 40%;
+    }
+    .main .content-wrapper .columns-wrapper .left-col .buttons-wrapper {
+        margin-right: auto;
+        width: -webkit-fit-content;
+        width: -moz-fit-content;
+        width: fit-content;
+        margin-top: 0.5rem;
+        margin-left: 6.9rem;
+        white-space: nowrap;
+    }
+    .main .content-wrapper .columns-wrapper .left-col .playstore-btn,
+    .main .content-wrapper .columns-wrapper .left-col .api-btn {
+        display: block;
+    }
+    .main .content-wrapper .columns-wrapper .left-col .playstore-btn {
+        margin-bottom: 0.3rem;
+    }
+    .main .content-wrapper .columns-wrapper .right-col .mobile-illustration {
+        position: absolute;
+        top: -20%;
+        right: 0;
+        width: 58%;
+        margin: unset;
+    }
+    footer {
+        height: unset;
+        padding: 0.8rem 3rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .main .content-wrapper .columns-wrapper {
+        position: relative;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+        flex-direction: row;
+    }
+    .main .content-wrapper .columns-wrapper .left-col,
+    .main .content-wrapper .columns-wrapper .right-col {
+        -webkit-box-ordinal-group: unset;
+        -ms-flex-order: unset;
+        order: unset;
+    }
+    .main .content-wrapper .columns-wrapper .left-col .popcom-logo {
+        display: block;
+        width: 38%;
+    }
+    .main .content-wrapper .columns-wrapper .left-col .buttons-wrapper {
+        margin-right: auto;
+        width: -webkit-fit-content;
+        width: -moz-fit-content;
+        width: fit-content;
+        margin-top: 0.5rem;
+        margin-left: 8.8rem;
+        white-space: nowrap;
+    }
+    .main .content-wrapper .columns-wrapper .left-col .playstore-btn,
+    .main .content-wrapper .columns-wrapper .left-col .api-btn {
+        display: inline-block;
+    }
+    .main .content-wrapper .columns-wrapper .left-col .playstore-btn {
+        margin-bottom: 0;
+    }
+    .main .content-wrapper .columns-wrapper .right-col .mobile-illustration {
+        position: absolute;
+        top: -60%;
+        right: 0;
+        width: 50%;
+        margin: unset;
+    }
+}
+
+@media (min-width: 1200px) {
+    .main .content-wrapper .columns-wrapper {
+        position: relative;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+        flex-direction: row;
+        margin: 0 30px;
+    }
+    .main .content-wrapper .columns-wrapper .left-col,
+    .main .content-wrapper .columns-wrapper .right-col {
+        -webkit-box-ordinal-group: unset;
+        -ms-flex-order: unset;
+        order: unset;
+    }
+    .main .content-wrapper .columns-wrapper .left-col .popcom-logo {
+        display: block;
+        width: 38%;
+    }
+    .main .content-wrapper .columns-wrapper .left-col .buttons-wrapper {
+        margin-right: auto;
+        width: -webkit-fit-content;
+        width: -moz-fit-content;
+        width: fit-content;
+        margin-top: 0.5rem;
+        margin-left: 10rem;
+        white-space: nowrap;
+    }
+    .main .content-wrapper .columns-wrapper .left-col .playstore-btn,
+    .main .content-wrapper .columns-wrapper .left-col .api-btn {
+        display: inline-block;
+    }
+    .main .content-wrapper .columns-wrapper .left-col .playstore-btn {
+        margin-bottom: 0;
+    }
+    .main .content-wrapper .columns-wrapper .right-col .mobile-illustration {
+        position: absolute;
+        top: -60%;
+        right: 0;
+        width: 50%;
+        margin: unset;
+    }
+}
+/*# sourceMappingURL=main.css.map */
