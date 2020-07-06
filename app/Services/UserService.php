@@ -68,7 +68,7 @@ class UserService {
             $user->contact_number = $contact_number;
             $user->email = $email;
             $user->password = Hash::make($password);
-            $user->roles = 'test';
+            $user->roles = 'admin';
             $user->status = 1;
             $user->created_by = $this->authenticated_user->id;
             $user->api_token = Str::random(60);
