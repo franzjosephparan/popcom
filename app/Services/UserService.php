@@ -27,11 +27,15 @@ class UserService {
         $user = $this->get_user_by_email($email);
 
         if ($user) {
-            if (Hash::check($credentials['password'], $user->password)) {
-                $success = 1;
-                $data = $user;
+            if ($user->status) {
+                if (Hash::check($credentials['password'], $user->password)) {
+                    $success = 1;
+                    $data = $user;
+                } else {
+                    $errors = 'Invalid user credentials';
+                }
             } else {
-                $errors = 'Invalid user credentials';
+                $errors = 'Account is inactive';
             }
         } else {
             $errors = 'No user was found';
@@ -50,12 +54,13 @@ class UserService {
         $contact_number,
         $email,
         $password,
-        $status
+        $image
     ) {
         $success = 0;
         $errors = [];
         $data = [];
 
+        DB::beginTransaction();
         try {
             $user = new User;
             $user->first_name = $first_name;
@@ -64,15 +69,28 @@ class UserService {
             $user->email = $email;
             $user->password = Hash::make($password);
             $user->roles = 'test';
-            $user->status = $status;
+            $user->status = 1;
             $user->created_by = $this->authenticated_user->id;
             $user->api_token = Str::random(60);
+
+            if (! empty($image)) {
+                $extension = explode('/', mime_content_type($image))[1];
+                $file_name = Str::random(20) . '.' . $extension;
+
+                if (file_exists(public_path('images'))) {
+                    file_put_contents(public_path('images') . '/' . $file_name, file_get_contents($image));
+                    $user->image = $file_name;
+                }
+            }
+
             $user->save();
 
             $success = 1;
             $data = $user;
+            DB::commit();
         } catch (\Exception $ex) {
-            $errors = 'An error occured';
+            DB::rollback();
+            $errors = $ex->getMessage();
         }
 
         return [

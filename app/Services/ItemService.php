@@ -1,26 +1,28 @@
 <?php
 namespace App\Services;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Item;
 
 class ItemService {
+    private $authenticated_user;
+
+    public function __construct() {
+        $this->authenticated_user = Auth::user();
+    }
+
     public function create(
         $item_sku,
         $item_name,
         $item_description,
         $category,
-        $image,
-        $status,
-        $api_token
+        $image
     ) {
         $success = 0;
         $errors = [];
         $data = [];
-        $creator = null;
-
-        $this->check_api_token($api_token, $creator, $errors);
 
         if (empty($errors)) {
             $item = new Item();
@@ -32,13 +34,15 @@ class ItemService {
             if (! empty($image)) {
                 $extension = explode('/', mime_content_type($image))[1];
                 $file_name = Str::random(20) . '.' . $extension;
-                file_put_contents(public_path('images') . '/' . $file_name, file_get_contents($image));
 
-                $item->image = $file_name;
+                if (file_exists(public_path('images'))) {
+                    file_put_contents(public_path('images') . '/' . $file_name, file_get_contents($image));
+                    $item->image = $file_name;
+                }
             }
 
-            $item->status = $status;
-            $item->created_by = $creator->id;
+            $item->status = 1;
+            $item->created_by = $this->authenticated_user->id;
             $item->save();
 
             $success = 1;
@@ -139,33 +143,5 @@ class ItemService {
             'errors' => 0,
             'data' => $items
         ];
-    }
-
-    private function check_user_email($email, &$errors) {
-        $user = $this->get_user_by_email($email);
-
-        if (! empty($user)) {
-            $errors = 'email is already used.';
-        }
-    }
-
-    private function check_api_token($api_token, &$creator, &$errors) {
-        $user = $this->get_user_by_token($api_token);
-
-        if (! empty($user)) {
-            $creator = $user;
-        } else {
-            $errors = 'Invalid api token';
-        }
-    }
-
-    private function get_user_by_token($api_token) {
-        $user = DB::table('users')->where('api_token', $api_token)->first();
-        return $user;
-    }
-
-    private function get_user_by_email($email) {
-        $user = DB::table('users')->where('email', $email)->first();
-        return $user;
     }
 }

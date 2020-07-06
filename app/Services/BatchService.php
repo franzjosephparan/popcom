@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\BatchInventory;
 use App\InventoryRequest;
 use App\InventoryRequestLine;
+use Illuminate\Support\Facades\DB;
 
 class BatchService {
     private $authenticated_user;
@@ -104,6 +105,22 @@ class BatchService {
         } catcH(\Exception $ex) {
             $errors = 'An error occurred';
         }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
+    public function transfer_inventory($inventory_request_id) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        DB::transaction(function() {
+
+        });
 
         return [
             'success' => $success,

@@ -44,8 +44,7 @@ class UsersController extends BaseController
             'last_name' => 'required',
             'contact_number' => 'required',
             'email' => 'required|unique:users,email|email',
-            'password' => 'required',
-            'status' => 'required'
+            'password' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -57,7 +56,7 @@ class UsersController extends BaseController
                 $request->input('contact_number'),
                 $request->input('email'),
                 $request->input('password'),
-                $request->input('status')
+                $request->input('image')
             );
         }
 

@@ -45,6 +45,17 @@ class FacilityService {
             $user->status = $user_status;
             $user->created_by = $this->authenticated_user->id;
             $user->api_token = Str::random(60);
+
+            if (! empty($image)) {
+                $extension = explode('/', mime_content_type($image))[1];
+                $file_name = Str::random(20) . '.' . $extension;
+
+                if (file_exists(public_path('images'))) {
+                    file_put_contents(public_path('images') . '/' . $file_name, file_get_contents($image));
+                    $user->image = $file_name;
+                }
+            }
+
             $user->save();
 
             $facility = new Facility();
