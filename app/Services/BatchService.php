@@ -148,17 +148,20 @@ class BatchService {
             $inventory_request->message = $message;
             $inventory_request->created_by = $this->authenticated_user->id;
             $inventory_request->save();
+            $final_data = $inventory_request;
 
             foreach ($items as $item) {
                 $inventory_request_line = new InventoryRequestLine();
                 $inventory_request_line->inventory_request_id = $inventory_request->id;
-                $inventory_request_line->item_id = $item['id'];
+                $inventory_request_line->item_id = $item['item_id'];
                 $inventory_request_line->quantity = $item['quantity'];
-                $inventory_request_line->uom = 'pcs';
+                $inventory_request_line->uom = $item['uom'];
                 $inventory_request_line->created_by = $this->authenticated_user->id;
                 $inventory_request_line->save();
+                $final_data['items'][] = $inventory_request_line;
             }
 
+            $data = $final_data;
             $success = 1;
         } catch (\Exception $ex) {
             $errors = 'An error occurred';
