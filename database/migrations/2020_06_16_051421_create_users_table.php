@@ -15,6 +15,7 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->integer('facility_id');
             $table->string('first_name');
             $table->string('last_name');
             $table->string('contact_number');
@@ -24,8 +25,8 @@ class CreateUsersTable extends Migration
             $table->enum('roles', ['admin', 'representative']);
             $table->string('image')->nullable();
             $table->boolean('status');
-            $table->tinyInteger('created_by');
-            $table->tinyInteger('updated_by')->nullable();
+            $table->integer('created_by');
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
         });
     }

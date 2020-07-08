@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use App\Services\ItemService;
 
@@ -15,34 +16,34 @@ class ItemController extends BaseController
     }
 
     public function create(Request $request) {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'item_sku' => 'required',
             'item_name' => 'required',
             'item_description' => 'required',
-            'category' => 'required',
-            'status' => 'required',
-            'api_token' => 'required'
+            'category' => 'required'
         ]);
 
-        $response = $this->item_service->create(
-            $request->input('item_sku'),
-            $request->input('item_name'),
-            $request->input('item_description'),
-            $request->input('category'),
-            $request->input('image'),
-            $request->input('status'),
-            $request->input('api_token')
-        );
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->item_service->create(
+                $request->input('item_sku'),
+                $request->input('item_name'),
+                $request->input('item_description'),
+                $request->input('category'),
+                $request->input('image')
+            );
+        }
 
         return response()->json([
-            'success' => $response['success'],
-            'errors' => $response['errors'],
-            'data' => $response['data']
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
         ]);
     }
 
     public function edit(Request $request) {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'item_sku' => 'required',
             'item_name' => 'required',
             'item_description' => 'required',
@@ -50,37 +51,44 @@ class ItemController extends BaseController
             'status' => 'required'
         ]);
 
-        $response = $this->item_service->edit(
-            $request->input('item_id'),
-            $request->input('item_sku'),
-            $request->input('item_name'),
-            $request->input('item_description'),
-            $request->input('category'),
-            $request->input('image'),
-            $request->input('status'),
-            $request->input('api_token')
-        );
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->item_service->edit(
+                $request->input('item_id'),
+                $request->input('item_sku'),
+                $request->input('item_name'),
+                $request->input('item_description'),
+                $request->input('category'),
+                $request->input('image'),
+                $request->input('status')
+            );
+        }
 
         return response()->json([
-            'success' => $response['success'],
-            'errors' => $response['errors'],
-            'data' => $response['data']
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
         ]);
     }
 
     public function search(Request $request) {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'search' => 'required'
         ]);
 
-        $response = $this->item_service->search(
-            $request->input('search')
-        );
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->item_service->search(
+                $request->input('search')
+            );
+        }
 
         return response()->json([
-            'success' => $response['success'],
-            'errors' => $response['errors'],
-            'data' => $response['data']
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
         ]);
     }
 

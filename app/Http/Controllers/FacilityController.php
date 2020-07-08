@@ -127,12 +127,12 @@ class FacilityController extends BaseController
 
         return response()->json([
             'success' => $response['success'] ?? 0,
-            'errors' => $response['errors'] ?? $errors,
+            'errors' => $response['errors'] ?? [],
             'data' => $response['data'] ?? []
         ]);
     }
 
-    public function get_facility_user(Request $request) {
+    public function get_facility_users(Request $request) {
         $validator = Validator::make($request->all(), [
             'facility_id' => 'required|numeric'
         ]);
@@ -140,7 +140,7 @@ class FacilityController extends BaseController
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
         } else {
-            $response = $this->facility_service->get_facility_user(
+            $response = $this->facility_service->get_facility_users(
                 $request->input('facility_id')
             );
         }

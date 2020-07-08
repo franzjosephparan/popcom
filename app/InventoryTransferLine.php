@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class InventoryTransferLines extends Model
+class InventoryTransferLine extends Model
 {
     protected $table = 'inventory_transfer_lines';
     protected $primaryKey = 'id';

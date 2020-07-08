@@ -15,4 +15,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $hidden = [
         'password',
     ];
+
+    public function facility() {
+        return $this->hasOne('App\Facility', 'id', 'facility_id');
+    }
 }

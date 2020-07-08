@@ -19,10 +19,7 @@ class BatchInventoryController extends BaseController
         $validator = Validator::make($request->all(), [
             'batch_name' => 'required',
             'facility_id' => 'required',
-            'item_id' => 'required',
-            'quantity' => 'required',
-            'uom' => 'required',
-            'expiration_date' => 'required'
+            'items' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -31,10 +28,69 @@ class BatchInventoryController extends BaseController
             $response = $this->batch_service->add_starting_inventory(
                 $request->input('batch_name'),
                 $request->input('facility_id'),
-                $request->input('item_id'),
-                $request->input('quantity'),
-                $request->input('uom'),
-                $request->input('expiration_date')
+                $request->input('items')
+            );
+        }
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
+        ]);
+    }
+
+    public function adjust_inventory(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'batch_id' => 'required',
+            'quantity' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->batch_service->adjust_inventory(
+                $request->input('batch_id'),
+                $request->input('quantity')
+            );
+        }
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
+        ]);
+    }
+
+    public function get_inventory(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'facility_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->batch_service->get_inventory(
+                $request->input('facility_id')
+            );
+        }
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
+        ]);
+    }
+
+    public function get_batch(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'batch_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->batch_service->get_batch(
+                $request->input('batch_id')
             );
         }
 
@@ -99,8 +155,14 @@ class BatchInventoryController extends BaseController
             $errors = $validator->errors()->all();
         } else {
             $response = $this->batch_service->view_requests(
-                $request->input('facility_id')
+                $request->input('inventory_request_id')
             );
         }
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
+        ]);
     }
 }

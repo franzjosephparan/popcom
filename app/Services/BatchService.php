@@ -1,8 +1,10 @@
 <?php
 namespace App\Services;
 
+use App\InventoryTransfer;
 use Illuminate\Support\Facades\Auth;
 use App\BatchInventory;
+use App\Item;
 use App\InventoryRequest;
 use App\InventoryRequestLine;
 use Illuminate\Support\Facades\DB;
@@ -17,31 +19,96 @@ class BatchService {
     public function add_starting_inventory(
         $batch_name,
         $facility_id,
-        $item_id,
-        $quantity,
-        $uom,
-        $expiration_date
+        $items
     ) {
         $success = 0;
         $errors = [];
         $data = [];
 
         try {
-            $batch = new BatchInventory();
-            $batch->batch_name = $batch_name;
-            $batch->facility_id = $facility_id;
-            $batch->item_id = $item_id;
-            $batch->quantity = $quantity;
-            $batch->uom = $uom;
-            $batch->expiration_date = $expiration_date;
-            $batch->status = 1;
-            $batch->created_by = $this->authenticated_user->id;
-            $batch->save();
+            $batch_data = [];
+            foreach ($items as $item) {
+                $batch = new BatchInventory();
+                $batch->batch_name = $batch_name;
+                $batch->facility_id = $facility_id;
+                $batch->item_id = $item['item_id'];
+                $batch->quantity = $item['quantity'];
+                $batch->uom = $item['uom'];
+                $batch->expiration_date = $item['expiration_date'];
+                $batch->status = 1;
+                $batch->created_by = $this->authenticated_user->id;
+                $batch->save();
+                array_push($batch_data, $batch->toArray());
+            }
 
             $success = 1;
-            $data = $batch->toArray();
+            $data = $batch_data;
         } catch (\Exception $ex) {
             $errors = 'An error occurred';
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
+    public function adjust_inventory($batch_id, $quantity) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        try {
+            $batch = BatchInventory::find($batch_id);
+            $batch->quantity = $quantity;
+            $batch->updated_by = $this->authenticated_user->id;
+            $batch->save();
+
+            $data = $batch;
+            $success = 1;
+        } catch (\Exception $ex) {
+            $errors = 'An error occurred';
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
+    public function get_inventory($facility_id) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        try {
+            $items = Item::with('batch')->where('status', 1)->get();
+            $data = $items;
+            $success = 1;
+        } catch (\Exception $ex) {
+            $errors = $ex->getMessage();
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
+    public function get_batch($batch_id) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        try {
+            $batch = BatchInventory::with('item')->where('id', $batch_id)->where('status', 1)->get();
+            $data = $batch;
+            $success = 1;
+        } catch (\Exception $ex) {
+            $errors = $ex->getMessage();
         }
 
         return [
@@ -118,9 +185,19 @@ class BatchService {
         $errors = [];
         $data = [];
 
-        DB::transaction(function() {
+        $inventory_request = InventoryRequest::find($inventory_request_id);
 
-        });
+        if (! empty($inventory_request)) {
+//            try {
+//                $transfer_request = new InventoryTransfer();
+//
+//                foreach ($items as $item) {
+//
+//                }
+//            } catch (\Exception $ex) {
+//
+//            }
+        }
 
         return [
             'success' => $success,

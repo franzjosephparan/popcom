@@ -2,7 +2,6 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Item;
 
@@ -63,15 +62,11 @@ class ItemService {
         $item_description,
         $category,
         $image,
-        $status,
-        $api_token
+        $status
     ) {
         $success = 0;
         $errors = [];
         $data = [];
-        $creator = null;
-
-        $this->check_api_token($api_token, $creator, $errors);
 
         if (empty($errors)) {
             $item = Item::find($item_id);
@@ -82,16 +77,18 @@ class ItemService {
                 $item->item_description = $item_description;
                 $item->category = $category;
 
-                if (!empty($image)) {
+                if (! empty($image)) {
                     $extension = explode('/', mime_content_type($image))[1];
                     $file_name = Str::random(20) . '.' . $extension;
-                    file_put_contents(public_path('uploads') . '/' . $file_name, file_get_contents($image));
 
-                    $item->image = $file_name;
+                    if (file_exists(public_path('images'))) {
+                        file_put_contents(public_path('images') . '/' . $file_name, file_get_contents($image));
+                        $item->image = $file_name;
+                    }
                 }
 
                 $item->status = $status;
-                $item->updated_by = $creator->id;
+                $item->updated_by = $this->authenticated_user->id;
                 $item->save();
 
                 $success = 1;
@@ -112,7 +109,6 @@ class ItemService {
         $success = 0;
         $errors = [];
         $data = [];
-        $creator = null;
 
         try {
             $items = Item::where('status', 1)->get();

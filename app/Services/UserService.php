@@ -60,9 +60,9 @@ class UserService {
         $errors = [];
         $data = [];
 
-        DB::beginTransaction();
         try {
             $user = new User;
+            $user->facility_id = -1;
             $user->first_name = $first_name;
             $user->last_name = $last_name;
             $user->contact_number = $contact_number;
@@ -87,9 +87,7 @@ class UserService {
 
             $success = 1;
             $data = $user;
-            DB::commit();
         } catch (\Exception $ex) {
-            DB::rollback();
             $errors = $ex->getMessage();
         }
 
@@ -111,11 +109,12 @@ class UserService {
             if (!empty($user)) {
                 $success = 1;
                 $data = $user;
+                $data['facility'] = $user->facility;
             } else {
                 $errors = 'No user found';
             }
         } catch (\Exception $ex) {
-            $errors = 'An error occured';
+            $errors = 'An error occurred';
         }
 
         return [
@@ -131,11 +130,11 @@ class UserService {
         $data = [];
 
         try {
-            $users = User::all();
+            $users = User::with('facility')->get();
             $success = 1;
             $data = $users;
         } catch (\Exception $ex) {
-            $errors = 'An error occured';
+            $errors = 'An error occurred';
         }
 
         return [
@@ -163,7 +162,7 @@ class UserService {
                 $errors = 'No user was found';
             }
         } catch (\Exception $ex) {
-            $errors = 'An error occured';
+            $errors = 'An error occurred';
         }
 
         return [
@@ -191,7 +190,7 @@ class UserService {
                 $errors = 'No user was found';
             }
         } catch (\Exception $ex) {
-            $errors = 'An error occured';
+            $errors = 'An error occurred';
         }
 
         return [
@@ -203,6 +202,7 @@ class UserService {
 
     public function edit(
         $user_id,
+        $facility_id,
         $first_name,
         $last_name,
         $contact_number,
@@ -218,6 +218,7 @@ class UserService {
 
             if (! empty($user)) {
                 try {
+                    $user->facility_id = $facility_id;
                     $user->first_name = $first_name;
                     $user->last_name = $last_name;
                     $user->email = $email;
@@ -229,13 +230,13 @@ class UserService {
                     $success = 1;
                     $data = $user;
                 } catch (\Exception $ex) {
-                    $errors = 'An error occured';
+                    $errors = 'An error occurred';
                 }
             } else {
                 $errors = 'User does not exist';
             }
         } catch (\Exception $ex) {
-            $errors = 'An error occured';
+            $errors = 'An error occurred';
         }
 
         return [
@@ -246,6 +247,6 @@ class UserService {
     }
 
     private function get_user_by_email($email) {
-        return DB::table('users')->where('email', $email)->first();
+        return User::with('facility')->where('email', $email)->first();
     }
 }

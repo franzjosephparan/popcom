@@ -15,17 +15,16 @@ class CreateFacilitiesTable extends Migration
     {
         Schema::create('facilities', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
             $table->string('facility_name');
             $table->string('address');
             $table->string('region');
             $table->string('province');
             $table->string('longitude')->nullable();
             $table->string('latitude')->nullable();
-            $table->enum('facility_type', ['RHU', 'MHC', 'CHO']);
+            $table->string('facility_type');
             $table->boolean('status');
-            $table->tinyInteger('created_by');
-            $table->tinyInteger('updated_by')->nullable();
+            $table->integer('created_by');
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
         });
     }

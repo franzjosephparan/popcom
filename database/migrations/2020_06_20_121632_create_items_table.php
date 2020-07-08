@@ -18,21 +18,20 @@ class CreateItemsTable extends Migration
             $table->string('item_sku')->unique();
             $table->string('item_name')->unique();
             $table->string('item_description');
-            $table->enum('category', [
-                'male condom',
-                'female condom',
-                'oral contraception',
-                'hormonal ring',
-                'uid',
-                'injection',
-                'surgical steralization',
-                'implant',
-                'coitus interruption',
-                'calendar rhythm method',
-                'vaginal douche',
-                'contraceptive patch',
-                'cap'
-            ]);
+//            'male condom',
+//            'female condom',
+//            'oral contraception',
+//            'hormonal ring',
+//            'uid',
+//            'injection',
+//            'surgical steralization',
+//            'implant',
+//            'coitus interruption',
+//            'calendar rhythm method',
+//            'vaginal douche',
+//            'contraceptive patch',
+//            'cap'
+            $table->string('category');
             $table->string('image')->nullable();
             $table->string('status');
             $table->string('created_by');

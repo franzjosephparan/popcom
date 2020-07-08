@@ -35,7 +35,20 @@ class FacilityService {
         $data = [];
 
         try {
+            $facility = new Facility();
+            $facility->facility_name = $facility_name;
+            $facility->address = $address;
+            $facility->region = $region;
+            $facility->province = $province;
+            $facility->longitude = $longitude;
+            $facility->latitude = $latitude;
+            $facility->facility_type = $facility_type;
+            $facility->status = $facility_status;
+            $facility->created_by = $this->authenticated_user->id;
+            $facility->save();
+
             $user = new User();
+            $user->facility_id = $facility->id;
             $user->first_name = $first_name;
             $user->last_name = $last_name;
             $user->contact_number = $contact_number;
@@ -55,21 +68,7 @@ class FacilityService {
                     $user->image = $file_name;
                 }
             }
-
             $user->save();
-
-            $facility = new Facility();
-            $facility->user_id = $user->id;
-            $facility->facility_name = $facility_name;
-            $facility->address = $address;
-            $facility->region = $region;
-            $facility->province = $province;
-            $facility->longitude = $longitude;
-            $facility->latitude = $latitude;
-            $facility->facility_type = $facility_type;
-            $facility->status = $facility_status;
-            $facility->created_by = $this->authenticated_user->id;
-            $facility->save();
 
             $success = 1;
             $data = [
@@ -77,7 +76,7 @@ class FacilityService {
                 'user' => $user
             ];
         } catch (\Exception $ex) {
-            $errors = 'An error occured';
+            $errors = 'An error occurred';
         }
 
         return [
@@ -106,7 +105,7 @@ class FacilityService {
                 $errors = 'Facility does not exist';
             }
         } catch (\Exception $ex) {
-            $errors = 'An error occured';
+            $errors = 'An error occurred';
         }
 
         return [
@@ -135,7 +134,7 @@ class FacilityService {
                 $errors = 'Facility does not exist';
             }
         } catch (\Exception $ex) {
-            $errors = 'An error occured';
+            $errors = 'An error occurred';
         }
 
         return [
@@ -190,7 +189,7 @@ class FacilityService {
         ];
     }
 
-    public function get_facility_user($facility_id) {
+    public function get_facility_users($facility_id) {
         $success = 0;
         $errors = [];
         $data = [];
@@ -199,14 +198,10 @@ class FacilityService {
             $facility = Facility::find($facility_id);
 
             if (! empty($facility)) {
-                $user = User::find($facility->user_id);
+                $users = User::where('facility_id', $facility->id)->get();
 
-                if (! empty($user)) {
-                    $success = 1;
-                    $data = $user;
-                } else {
-                    $errors = 'Unable to find user assigned to facility';
-                }
+                $success = 1;
+                $data = $users;
             } else {
                 $errors = 'Facility does not exist';
             }

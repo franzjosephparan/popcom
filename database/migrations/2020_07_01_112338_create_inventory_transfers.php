@@ -19,10 +19,10 @@ class CreateInventoryTransfers extends Migration
             $table->integer('supplying_facility_id');
             $table->string('message');
             $table->string('status');
-            $table->integer('accepted_by');
-            $table->integer('accepted_at');
+            $table->integer('accepted_by')->nullable();
+            $table->timestamp('accepted_at')->nullable();
             $table->integer('created_by');
-            $table->integer('updated_by');
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
         });
     }

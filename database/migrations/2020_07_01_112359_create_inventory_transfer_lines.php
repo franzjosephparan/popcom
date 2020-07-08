@@ -20,7 +20,7 @@ class CreateInventoryTransferLines extends Migration
             $table->integer('batch_inventory_id');
             $table->enum('uom', ['pcs']);
             $table->integer('created_by');
-            $table->integer('updated_by');
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
         });
     }

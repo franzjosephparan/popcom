@@ -18,7 +18,7 @@ class CreateInventoryRequests extends Migration
             $table->integer('receiving_facility_id');
             $table->integer('supplying_facility_id');
             $table->string('message');
-            $table->enum('status', ['pending', 'accepted', 'declined']);
+            $table->enum('status', ['pending', 'accepted', 'declined', 'in transit']);
             $table->integer('status_by')->nullable();
             $table->timestamp('status_at')->nullable();
             $table->integer('created_by');

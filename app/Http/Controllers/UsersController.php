@@ -158,7 +158,7 @@ class UsersController extends BaseController
         ]);
     }
 
-    public function get_users(Request $request) {
+    public function get_users() {
         $response = $this->user_service->get_users();
 
         return response()->json([
