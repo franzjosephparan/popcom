@@ -30,7 +30,7 @@ class FacilityController extends BaseController
             'province' => 'required',
             'longitude' => 'required',
             'latitude' => 'required',
-            'facility_type' => 'required|in:RHU,MHC,CHO',
+            'facility_type' => 'required',
             'facility_status' => 'required'
         ]);
 
