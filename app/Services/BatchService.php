@@ -84,8 +84,21 @@ class BatchService {
         $data = [];
 
         try {
-            $items = Item::with('batch')->where('status', 1)->get();
-            $data = $items;
+            $inventory = [];
+            $items = Item::where('status', 1)->get();
+
+            foreach ($items as $key => $item) {
+                $batch = BatchInventory::where('item_id', $item['id'])
+                    ->where('facility_id', $facility_id)
+                    ->where('status', 1)->get();
+
+                $inventory[] = [
+                    'item' => $item,
+                    'batch' => $batch
+                ];
+            }
+
+            $data = $inventory;
             $success = 1;
         } catch (\Exception $ex) {
             $errors = $ex->getMessage();
