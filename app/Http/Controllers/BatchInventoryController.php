@@ -188,14 +188,41 @@ class BatchInventoryController extends BaseController
 
     public function transfer_inventory(Request $request) {
         $validator = Validator::make($request->all(), [
-            'inventory_request_id' => 'required'
+            'receiving_facility_id' => 'required',
+            'supplying_facility_id' => 'required',
+            'items' => 'required'
         ]);
 
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
         } else {
-            $response = $this->batch_service->view_requests(
-                $request->input('inventory_request_id')
+            $response = $this->batch_service->transfer_inventory(
+                $request->input('receiving_facility_id'),
+                $request->input('supplying_facility_id'),
+                $request->input('items'),
+                $request->input('message')
+            );
+        }
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
+        ]);
+    }
+
+    public function receive_inventory(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'inventory_transfer_id' => 'required',
+            'receiving_facility_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->batch_service->receive_inventory(
+                $request->input('inventory_transfer_id'),
+                $request->input('receiving_facility_id')
             );
         }
 

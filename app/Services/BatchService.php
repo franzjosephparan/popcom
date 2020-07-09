@@ -2,12 +2,14 @@
 namespace App\Services;
 
 use App\InventoryTransfer;
+use App\InventoryTransferLine;
 use Illuminate\Support\Facades\Auth;
 use App\BatchInventory;
 use App\Item;
 use App\InventoryRequest;
 use App\InventoryRequestLine;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class BatchService {
     private $authenticated_user;
@@ -236,23 +238,92 @@ class BatchService {
         ];
     }
 
-    public function transfer_inventory($inventory_request_id) {
+    public function transfer_inventory(
+        $receiving_facility_id,
+        $supplying_facility_id,
+        $items,
+        $message
+    ) {
         $success = 0;
         $errors = [];
         $data = [];
 
-        $inventory_request = InventoryRequest::find($inventory_request_id);
+        DB::beginTransaction();
+        try {
+            $transfer = new InventoryTransfer();
+            $transfer->receiving_facility_id = $receiving_facility_id;
+            $transfer->supplying_facility_id = $supplying_facility_id;
+            $transfer->message = $message;
+            $transfer->status = 'prepared';
+            $transfer->created_by = $this->authenticated_user->id;
+            $transfer->save();
+            $final_data = $transfer->toArray();
 
-        if (! empty($inventory_request)) {
-//            try {
-//                $transfer_request = new InventoryTransfer();
-//
-//                foreach ($items as $item) {
-//
-//                }
-//            } catch (\Exception $ex) {
-//
-//            }
+            foreach ($items as $item) {
+                $transfer_line = new InventoryTransferLine();
+                $transfer_line->inventory_transfer_id = $transfer->id;
+                $transfer_line->item_id = $item['item_id'];
+                $transfer_line->batch_inventory_id = $item['batch_inventory_id'];
+                $transfer_line->quantity = $item['quantity'];
+                $transfer_line->uom = $item['uom'];
+                $transfer_line->created_by = $this->authenticated_user->id;
+                $transfer_line->save();
+
+                $batch = BatchInventory::find($item['batch_inventory_id']);
+                $batch->quantity = (int)$batch->quantity - (int)$item['quantity'];
+                $batch->updated_by = $this->authenticated_user->id;
+                $batch->save();
+
+                $final_data['items'][] = $transfer_line;
+            }
+
+            $data = $final_data;
+            $success = 1;
+            DB::commit();
+        } catch (\Exception $ex) {
+            $errors = $ex->getMessage();
+            DB::rollBack();
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
+    public function receive_inventory($inventory_transfer_id, $receiving_inventory_id) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        DB::beginTransaction();
+        try {
+            $transfer = InventoryTransfer::find($inventory_transfer_id);
+            $transfer->status = 'received';
+            $transfer->accepted_by = $this->authenticated_user->id;
+            $transfer->accepted_at = Carbon::now()->toDateTimeString();
+            $transfer->save();
+
+            foreach ($transfer->lines as $line) {
+                $line_batch = BatchInventory::find($line->batch_inventory_id);
+                $batch = new BatchInventory();
+                $batch->batch_name = $line_batch->batch_name;
+                $batch->facility_id = $receiving_inventory_id;
+                $batch->item_id = $line->item_id;
+                $batch->quantity = $line->quantity;
+                $batch->uom = $line->uom;
+                $batch->expiration_date = $line_batch->expiration_date;
+                $batch->status = 1;
+                $batch->created_by = $this->authenticated_user->id;
+                $batch->save();
+            }
+
+            $success = 1;
+            DB::commit();
+        } catch (\Exception $ex) {
+            $errors = $ex->getMessage();
+            DB::rollBack();
         }
 
         return [

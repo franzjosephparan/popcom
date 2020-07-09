@@ -6,8 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class InventoryTransfer extends Model
 {
-    protected $table = 'inventory_transfer';
+    protected $table = 'inventory_transfers';
     protected $primaryKey = 'id';
     protected $guarded = [];
     protected $hidden = [];
+
+    public function lines() {
+        return $this->hasMany('App\InventoryTransferLine', 'inventory_transfer_id', 'id');
+    }
 }
