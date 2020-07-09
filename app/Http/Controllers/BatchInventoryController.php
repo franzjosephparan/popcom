@@ -188,8 +188,7 @@ class BatchInventoryController extends BaseController
 
     public function transfer_inventory(Request $request) {
         $validator = Validator::make($request->all(), [
-            'receiving_facility_id' => 'required',
-            'supplying_facility_id' => 'required',
+            'request_inventory_id' => 'required',
             'items' => 'required'
         ]);
 
@@ -197,8 +196,7 @@ class BatchInventoryController extends BaseController
             $errors = $validator->errors()->all();
         } else {
             $response = $this->batch_service->transfer_inventory(
-                $request->input('receiving_facility_id'),
-                $request->input('supplying_facility_id'),
+                $request->input('request_inventory_id'),
                 $request->input('items'),
                 $request->input('message')
             );

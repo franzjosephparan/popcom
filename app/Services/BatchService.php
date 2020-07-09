@@ -270,8 +270,7 @@ class BatchService {
     }
 
     public function transfer_inventory(
-        $receiving_facility_id,
-        $supplying_facility_id,
+        $request_inventory_id,
         $items,
         $message
     ) {
@@ -281,9 +280,13 @@ class BatchService {
 
         DB::beginTransaction();
         try {
+            $request = InventoryRequest::find($request_inventory_id);
+            $request->status = 'accepted';
+            $request->save();
+
             $transfer = new InventoryTransfer();
-            $transfer->receiving_facility_id = $receiving_facility_id;
-            $transfer->supplying_facility_id = $supplying_facility_id;
+            $transfer->receiving_facility_id = $request->receiving_facility_id;
+            $transfer->supplying_facility_id = $request->supplying_facility_id;
             $transfer->message = $message;
             $transfer->status = 'prepared';
             $transfer->created_by = $this->authenticated_user->id;
