@@ -30,12 +30,11 @@ class ItemService {
             $item->item_description = $item_description;
             $item->category = $category;
 
-            if (! empty($image)) {
-                $extension = explode('/', mime_content_type($image))[1];
-                $file_name = Str::random(20) . '.' . $extension;
+            if (!empty($image)) {
+                $file_name = Str::random(20) . '.' . $image->getClientOriginalExtension();
 
                 if (file_exists(public_path('images'))) {
-                    file_put_contents(public_path('images') . '/' . $file_name, file_get_contents($image));
+                    $image->move(public_path('images'), $file_name);
                     $item->image = $file_name;
                 }
             }
