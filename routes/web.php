@@ -40,6 +40,8 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
     $router->post('/adjust-inventory', ['uses' => 'BatchInventoryController@adjust_inventory']);
     $router->post('/get-inventory', ['uses' => 'BatchInventoryController@get_inventory']);
     $router->post('/get-batch', ['uses' => 'BatchInventoryController@get_batch']);
+    $router->post('/get-facility-batches', ['uses' => 'BatchInventoryController@get_facility_batches']);
+    $router->post('/get-item-batches', ['uses' => 'BatchInventoryController@get_item_batches']);
     $router->post('/request-inventory', ['uses' => 'BatchInventoryController@request_inventory']);
     $router->post('/view-requests', ['uses' => 'BatchInventoryController@view_requests']);
     $router->post('/transfer-inventory', ['uses' => 'BatchInventoryController@receive_inventory']);

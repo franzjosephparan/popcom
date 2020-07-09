@@ -131,6 +131,46 @@ class BatchService {
         ];
     }
 
+    public function get_facility_batches($facility_id) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        try {
+            $batches = BatchInventory::with('item')->where('facility_id', $facility_id)->where('status', 1)->get();
+            $data = $batches;
+            $success = 1;
+        } catch (\Exception $ex) {
+            $errors = $ex->getMessage();
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
+    public function get_item_batches($item_id) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        try {
+            $batches = BatchInventory::with('item')->where('item_id', $item_id)->where('status', 1)->get();
+            $data = $batches;
+            $success = 1;
+        } catch (\Exception $ex) {
+            $errors = $ex->getMessage();
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
     public function request_inventory(
         $receiving_facility_id,
         $supplying_facility_id,

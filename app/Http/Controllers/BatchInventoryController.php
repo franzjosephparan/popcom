@@ -101,6 +101,46 @@ class BatchInventoryController extends BaseController
         ]);
     }
 
+    public function get_facility_batches(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'facility_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->batch_service->get_facility_batches(
+                $request->input('facility_id')
+            );
+        }
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
+        ]);
+    }
+
+    public function get_item_batches(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'item_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->batch_service->get_item_batches(
+                $request->input('item_id')
+            );
+        }
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
+        ]);
+    }
+
     public function request_inventory(Request $request) {
         $validator = Validator::make($request->all(), [
             'receiving_facility_id' => 'required',
