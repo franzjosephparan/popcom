@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\InventoryLedger;
 use App\InventoryTransfer;
 use App\InventoryTransferLine;
 use Illuminate\Support\Facades\Auth;
@@ -27,6 +28,7 @@ class BatchService {
         $errors = [];
         $data = [];
 
+        DB::beginTransaction();
         try {
             $batch_data = [];
             foreach ($items as $item) {
@@ -41,12 +43,24 @@ class BatchService {
                 $batch->created_by = $this->authenticated_user->id;
                 $batch->save();
                 array_push($batch_data, $batch->toArray());
+
+                $ledger = new InventoryLedger();
+                $ledger->batch_inventory_id = $batch['id'];
+                $ledger->item_id = $item['item_id'];
+                $ledger->facility_id = $facility_id;
+                $ledger->quantity = $item['quantity'];
+                $ledger->uom = $item['uom'];
+                $ledger->transaction_type = 'starting';
+                $ledger->created_by = $this->authenticated_user->id;
+                $ledger->save();
             }
 
             $success = 1;
             $data = $batch_data;
+            DB::commit();
         } catch (\Exception $ex) {
-            $errors = 'An error occurred';
+            $errors = $ex->getMessage();
+            DB::rollBack();
         }
 
         return [
@@ -61,16 +75,30 @@ class BatchService {
         $errors = [];
         $data = [];
 
+        DB::beginTransaction();
         try {
             $batch = BatchInventory::find($batch_id);
+            $previous_quant = $batch->quantity;
             $batch->quantity = $quantity;
             $batch->updated_by = $this->authenticated_user->id;
             $batch->save();
 
+            $ledger = new InventoryLedger();
+            $ledger->batch_inventory_id = $batch->id;
+            $ledger->item_id = $batch->item_id;
+            $ledger->facility_id = $batch->facility_id;
+            $ledger->quantity = (int)$quantity - (int)$previous_quant;
+            $ledger->uom = $batch->uom;
+            $ledger->transaction_type = 'adjustment';
+            $ledger->created_by = $this->authenticated_user->id;
+            $ledger->save();
+
             $data = $batch;
             $success = 1;
+            DB::commit();
         } catch (\Exception $ex) {
             $errors = 'An error occurred';
+            DB::rollBack();
         }
 
         return [
@@ -183,6 +211,7 @@ class BatchService {
         $errors = [];
         $data = [];
 
+        DB::beginTransaction();
         try {
             $inventory_request = new InventoryRequest();
             $inventory_request->receiving_facility_id = $receiving_facility_id;
@@ -205,8 +234,10 @@ class BatchService {
 
             $data = $final_data;
             $success = 1;
+            DB::commit();
         } catch (\Exception $ex) {
             $errors = 'An error occurred';
+            DB::rollBack();
         }
 
         return [
@@ -274,6 +305,16 @@ class BatchService {
                 $batch->updated_by = $this->authenticated_user->id;
                 $batch->save();
 
+                $ledger = new InventoryLedger();
+                $ledger->batch_inventory_id = $batch->id;
+                $ledger->item_id = $batch->item_id;
+                $ledger->facility_id = $batch->facility_id;
+                $ledger->quantity = (int)$item['quantity'] * -1;
+                $ledger->uom = $batch->uom;
+                $ledger->transaction_type = 'transfer';
+                $ledger->created_by = $this->authenticated_user->id;
+                $ledger->save();
+
                 $final_data['items'][] = $transfer_line;
             }
 
@@ -317,6 +358,16 @@ class BatchService {
                 $batch->status = 1;
                 $batch->created_by = $this->authenticated_user->id;
                 $batch->save();
+
+                $ledger = new InventoryLedger();
+                $ledger->batch_inventory_id = $batch->id;
+                $ledger->item_id = $batch->item_id;
+                $ledger->facility_id = $batch->facility_id;
+                $ledger->quantity = $batch->quantity;
+                $ledger->uom = $batch->uom;
+                $ledger->transaction_type = 'receive';
+                $ledger->created_by = $this->authenticated_user->id;
+                $ledger->save();
             }
 
             $success = 1;
