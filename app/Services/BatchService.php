@@ -22,7 +22,10 @@ class BatchService {
     public function add_starting_inventory(
         $batch_name,
         $facility_id,
-        $items
+        $item_id,
+        $quantity,
+        $uom,
+        $expiration_date
     ) {
         $success = 0;
         $errors = [];
@@ -30,33 +33,29 @@ class BatchService {
 
         DB::beginTransaction();
         try {
-            $batch_data = [];
-            foreach ($items as $item) {
-                $batch = new BatchInventory();
-                $batch->batch_name = $batch_name;
-                $batch->facility_id = $facility_id;
-                $batch->item_id = $item['item_id'];
-                $batch->quantity = $item['quantity'];
-                $batch->uom = $item['uom'];
-                $batch->expiration_date = $item['expiration_date'];
-                $batch->status = 1;
-                $batch->created_by = $this->authenticated_user->id;
-                $batch->save();
-                array_push($batch_data, $batch->toArray());
+            $batch = new BatchInventory();
+            $batch->batch_name = $batch_name;
+            $batch->facility_id = $facility_id;
+            $batch->item_id = $item_id;
+            $batch->quantity = $quantity;
+            $batch->uom = $uom;
+            $batch->expiration_date = $expiration_date;
+            $batch->status = 1;
+            $batch->created_by = $this->authenticated_user->id;
+            $batch->save();
 
-                $ledger = new InventoryLedger();
-                $ledger->batch_inventory_id = $batch['id'];
-                $ledger->item_id = $item['item_id'];
-                $ledger->facility_id = $facility_id;
-                $ledger->quantity = $item['quantity'];
-                $ledger->uom = $item['uom'];
-                $ledger->transaction_type = 'starting';
-                $ledger->created_by = $this->authenticated_user->id;
-                $ledger->save();
-            }
+            $ledger = new InventoryLedger();
+            $ledger->batch_inventory_id = $batch['id'];
+            $ledger->item_id = $item_id;
+            $ledger->facility_id = $facility_id;
+            $ledger->quantity = $quantity;
+            $ledger->uom = $uom;
+            $ledger->transaction_type = 'starting';
+            $ledger->created_by = $this->authenticated_user->id;
+            $ledger->save();
 
             $success = 1;
-            $data = $batch_data;
+            $data = $batch;
             DB::commit();
         } catch (\Exception $ex) {
             $errors = $ex->getMessage();

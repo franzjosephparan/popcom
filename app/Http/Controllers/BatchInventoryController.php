@@ -19,7 +19,10 @@ class BatchInventoryController extends BaseController
         $validator = Validator::make($request->all(), [
             'batch_name' => 'required',
             'facility_id' => 'required',
-            'items' => 'required'
+            'item_id' => 'required',
+            'quantity' => 'required',
+            'uom' => 'required',
+            'expiration_date' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -28,7 +31,10 @@ class BatchInventoryController extends BaseController
             $response = $this->batch_service->add_starting_inventory(
                 $request->input('batch_name'),
                 $request->input('facility_id'),
-                $request->input('items')
+                $request->input('item_id'),
+                $request->input('quantity'),
+                $request->input('uom'),
+                $request->input('expiration_date')
             );
         }
 
