@@ -39,7 +39,7 @@ class BatchService {
             $batch->item_id = $item_id;
             $batch->quantity = $quantity;
             $batch->uom = $uom;
-            $batch->expiration_date = $expiration_date;
+            $batch->expiration_date = Carbon::createFromTimestamp($expiration_date)->toDateTimeString();
             $batch->status = 1;
             $batch->created_by = $this->authenticated_user->id;
             $batch->save();
