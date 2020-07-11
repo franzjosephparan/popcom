@@ -203,6 +203,26 @@ class BatchInventoryController extends BaseController
         ]);
     }
 
+    public function cancel_request(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'request_inventory_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->batch_service->cancel_request(
+                $request->input('request_inventory_id')
+            );
+        }
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
+        ]);
+    }
+
     public function decline_request(Request $request) {
         $validator = Validator::make($request->all(), [
             'request_inventory_id' => 'required'
@@ -268,16 +288,14 @@ class BatchInventoryController extends BaseController
 
     public function receive_inventory(Request $request) {
         $validator = Validator::make($request->all(), [
-            'inventory_transfer_id' => 'required',
-            'receiving_facility_id' => 'required'
+            'inventory_transfer_id' => 'required'
         ]);
 
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
         } else {
             $response = $this->batch_service->receive_inventory(
-                $request->input('inventory_transfer_id'),
-                $request->input('receiving_facility_id')
+                $request->input('inventory_transfer_id')
             );
         }
 

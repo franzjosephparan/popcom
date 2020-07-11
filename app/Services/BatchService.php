@@ -321,6 +321,33 @@ class BatchService {
         ];
     }
 
+    public function cancel_request($request_inventory_id) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        DB::beginTransaction();
+        try {
+            $inventory_request = InventoryRequest::find($request_inventory_id);
+            $inventory_request->active = 0;
+            $inventory_request->updated_by = $this->authenticated_user->id;
+            $inventory_request->save();
+
+            $data = $inventory_request;
+            $success = 1;
+            DB::commit();
+        } catch (\Exception $ex) {
+            $errors = $ex->getMessage();
+            DB::rollBack();
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
     public function decline_request($request_inventory_id) {
         $success = 0;
         $errors = [];
@@ -442,7 +469,7 @@ class BatchService {
         ];
     }
 
-    public function receive_inventory($inventory_transfer_id, $receiving_inventory_id) {
+    public function receive_inventory($inventory_transfer_id) {
         $success = 0;
         $errors = [];
         $data = [];
@@ -459,7 +486,7 @@ class BatchService {
                 $line_batch = BatchInventory::find($line->batch_inventory_id);
                 $batch = new BatchInventory();
                 $batch->batch_name = $line_batch->batch_name;
-                $batch->facility_id = $receiving_inventory_id;
+                $batch->facility_id = $transfer->receiving_facility_id;
                 $batch->item_id = $line->item_id;
                 $batch->quantity = $line->quantity;
                 $batch->uom = $line->uom;
@@ -478,6 +505,16 @@ class BatchService {
                 $ledger->created_by = $this->authenticated_user->id;
                 $ledger->save();
             }
+
+            $request = InventoryRequest::where('inventory_transfer_id', $inventory_transfer_id)->get()->toArray();
+
+            if (! empty($request))
+                $request = $request[0];
+
+            $request = InventoryRequest::find($request['id']);
+            $request->active = 0;
+            $request->updated_by = $this->authenticated_user->id;
+            $request->save();
 
             $success = 1;
             DB::commit();
