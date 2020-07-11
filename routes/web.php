@@ -48,5 +48,7 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
     $router->post('/decline-request', ['uses' => 'BatchInventoryController@decline_request']);
     $router->post('/view-requests', ['uses' => 'BatchInventoryController@view_requests']);
     $router->post('/transfer-inventory', ['uses' => 'BatchInventoryController@transfer_inventory']);
+    $router->post('/update-transfer-status', ['uses' => 'BatchInventoryController@update_transfer_status']);
     $router->post('/receive-inventory', ['uses' => 'BatchInventoryController@receive_inventory']);
+    $router->post('/get-to-receive-inventory', ['uses' => 'BatchInventoryController@get_to_receive_inventory']);
 });

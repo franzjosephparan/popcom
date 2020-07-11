@@ -14,4 +14,8 @@ class InventoryTransfer extends Model
     public function lines() {
         return $this->hasMany('App\InventoryTransferLine', 'inventory_transfer_id', 'id');
     }
+
+    public function request() {
+        return $this->hasMany('App\InventoryRequest', 'inventory_transfer_id', 'id');
+    }
 }

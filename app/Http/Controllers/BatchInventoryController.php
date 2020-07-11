@@ -286,6 +286,26 @@ class BatchInventoryController extends BaseController
         ]);
     }
 
+    public function update_transfer_status(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'inventory_transfer_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->batch_service->update_transfer_status(
+                $request->input('inventory_transfer_id')
+            );
+        }
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
+        ]);
+    }
+
     public function receive_inventory(Request $request) {
         $validator = Validator::make($request->all(), [
             'inventory_transfer_id' => 'required'
@@ -296,6 +316,26 @@ class BatchInventoryController extends BaseController
         } else {
             $response = $this->batch_service->receive_inventory(
                 $request->input('inventory_transfer_id')
+            );
+        }
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
+        ]);
+    }
+
+    public function get_to_receive_inventory(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'facility_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->batch_service->get_to_receive_inventory(
+                $request->input('facility_id')
             );
         }
 

@@ -469,6 +469,33 @@ class BatchService {
         ];
     }
 
+    public function update_transfer_status($inventory_transfer_id) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        DB::beginTransaction();
+        try {
+            $transfer = InventoryTransfer::find($inventory_transfer_id);
+            $transfer->status = 'in transit';
+            $transfer->updated_by = $this->authenticated_user->id;
+            $transfer->save();
+
+            $data = $transfer;
+            $success = 1;
+            DB::commit();
+        } catch (\Exception $ex) {
+            $errors = $ex->getMessage();
+            DB::rollBack();
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
     public function receive_inventory($inventory_transfer_id) {
         $success = 0;
         $errors = [];
@@ -516,6 +543,30 @@ class BatchService {
             $request->updated_by = $this->authenticated_user->id;
             $request->save();
 
+            $success = 1;
+            DB::commit();
+        } catch (\Exception $ex) {
+            $errors = $ex->getMessage();
+            DB::rollBack();
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
+    public function get_to_receive_inventory($facility_id) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        DB::beginTransaction();
+        try {
+            $request = InventoryTransfer::where('receiving_facility_id', $facility_id)->where('status', 'in transit')->with('request.items.item', 'lines')->get()->toArray();
+
+            $data = $request;
             $success = 1;
             DB::commit();
         } catch (\Exception $ex) {
