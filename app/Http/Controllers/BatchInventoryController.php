@@ -174,6 +174,33 @@ class BatchInventoryController extends BaseController
         ]);
     }
 
+    public function edit_request(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'receiving_facility_id' => 'required',
+            'supplying_facility_id' => 'required',
+            'items' => 'required',
+            'expected_delivery_date' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->batch_service->request_inventory(
+                $request->input('receiving_facility_id'),
+                $request->input('supplying_facility_id'),
+                $request->input('items'),
+                $request->input('message'),
+                $request->input('expected_delivery_date')
+            );
+        }
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
+        ]);
+    }
+
     public function view_requests(Request $request) {
         $validator = Validator::make($request->all(), [
             'facility_id' => 'required'
