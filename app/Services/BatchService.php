@@ -321,14 +321,15 @@ class BatchService {
         ];
     }
 
+
     public function view_requests($facility_id) {
         $success = 0;
         $errors = [];
         $data = [];
 
         try {
-            $receiving_requests = InventoryRequest::where('receiving_facility_id', $facility_id)->with('items')->get();
-            $supplying_requests = InventoryRequest::where('supplying_facility_id', $facility_id)->with('items')->get();
+            $receiving_requests = InventoryRequest::where('receiving_facility_id', $facility_id)->with('items.item')->get();
+            $supplying_requests = InventoryRequest::where('supplying_facility_id', $facility_id)->with('items.item')->get();
 
             $success = 1;
             $data = $receiving_requests->merge($supplying_requests);
