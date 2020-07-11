@@ -248,6 +248,16 @@ class BatchService {
         ];
     }
 
+    public function edit_request(
+        $receiving_facility_id,
+        $supplying_facility_id,
+        $items,
+        $message,
+        $expected_delivery_date
+    ) {
+
+    }
+
     public function view_requests($facility_id) {
         $success = 0;
         $errors = [];
@@ -255,10 +265,23 @@ class BatchService {
 
         try {
             $receiving_requests = InventoryRequest::where('receiving_facility_id', $facility_id)->with('items')->get();
-            $supplying_request = InventoryRequest::where('supplying_facility_id', $facility_id)->with('items')->get();
+
+            foreach ($receiving_requests as $receiving_request) {
+                foreach ($receiving_request->items as &$rItem) {
+                    $rItem->toArray();
+                }
+            }
+
+            $supplying_requests = InventoryRequest::where('supplying_facility_id', $facility_id)->with('items')->get();
+
+            foreach ($supplying_requests as $supplying_request) {
+                foreach ($supplying_request->items as &$sItem) {
+                    $sItem->toArray();
+                }
+            }
 
             $success = 1;
-            $data = $receiving_requests->merge($supplying_request);
+            $data = $receiving_requests->merge($supplying_requests);
         } catcH(\Exception $ex) {
             $errors = 'An error occurred';
         }
