@@ -14,4 +14,8 @@ class InventoryRequest extends Model
     public function items() {
         return $this->hasMany('App\InventoryRequestLine', 'inventory_request_id');
     }
+
+    public function transfer() {
+        return $this->hasOne('App\InventoryTransfer', 'id', 'inventory_transfer_id');
+    }
 }

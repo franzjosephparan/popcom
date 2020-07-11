@@ -321,6 +321,33 @@ class BatchService {
         ];
     }
 
+    public function decline_request($request_inventory_id) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        DB::beginTransaction();
+        try {
+            $inventory_request = InventoryRequest::find($request_inventory_id);
+            $inventory_request->status = 'declined';
+            $inventory_request->status_by = $this->authenticated_user->id;
+            $inventory_request->status_at = Carbon::now()->toDateTimeString();
+            $inventory_request->save();
+
+            $data = $inventory_request;
+            $success = 1;
+            DB::commit();
+        } catch (\Exception $ex) {
+            $errors = $ex->getMessage();
+            DB::rollBack();
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
 
     public function view_requests($facility_id) {
         $success = 0;
@@ -328,8 +355,8 @@ class BatchService {
         $data = [];
 
         try {
-            $receiving_requests = InventoryRequest::where('receiving_facility_id', $facility_id)->with('items.item')->get();
-            $supplying_requests = InventoryRequest::where('supplying_facility_id', $facility_id)->with('items.item')->get();
+            $receiving_requests = InventoryRequest::where('receiving_facility_id', $facility_id)->with('transfer.lines', 'items.item')->get();
+            $supplying_requests = InventoryRequest::where('supplying_facility_id', $facility_id)->with('transfer.lines', 'items.item')->get();
 
             $success = 1;
             $data = $receiving_requests->merge($supplying_requests);
@@ -356,8 +383,6 @@ class BatchService {
         DB::beginTransaction();
         try {
             $request = InventoryRequest::find($request_inventory_id);
-            $request->status = 'accepted';
-            $request->save();
 
             $transfer = new InventoryTransfer();
             $transfer->receiving_facility_id = $request->receiving_facility_id;
@@ -395,6 +420,12 @@ class BatchService {
 
                 $final_data['items'][] = $transfer_line;
             }
+
+            $request->status = 'accepted';
+            $request->status_by = $this->authenticated_user->id;
+            $request->status_at = Carbon::now()->toDateTimeString();
+            $request->inventory_transfer_id = $transfer->id;
+            $request->save();
 
             $data = $final_data;
             $success = 1;
