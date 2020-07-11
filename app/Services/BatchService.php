@@ -469,6 +469,30 @@ class BatchService {
         ];
     }
 
+    public function get_transfers($facility_id) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        DB::beginTransaction();
+        try {
+            $transfers = InventoryTransfer::where('supplying_facility_id', $facility_id)->where('status', 'prepared')->with('lines', 'request')->get();
+
+            $data = $transfers;
+            $success = 1;
+            DB::commit();
+        } catch (\Exception $ex) {
+            $errors = $ex->getMessage();
+            DB::rollBack();
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
     public function update_transfer_status($inventory_transfer_id) {
         $success = 0;
         $errors = [];

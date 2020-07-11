@@ -286,6 +286,26 @@ class BatchInventoryController extends BaseController
         ]);
     }
 
+    public function get_transfers(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'facility_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->batch_service->get_transfers(
+                $request->input('facility_id')
+            );
+        }
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
+        ]);
+    }
+
     public function update_transfer_status(Request $request) {
         $validator = Validator::make($request->all(), [
             'inventory_transfer_id' => 'required',
