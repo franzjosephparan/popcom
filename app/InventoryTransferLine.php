@@ -10,4 +10,8 @@ class InventoryTransferLine extends Model
     protected $primaryKey = 'id';
     protected $guarded = [];
     protected $hidden = [];
+
+    public function item() {
+        return $this->hasOne('App\Item', 'id', 'item_id');
+    }
 }
