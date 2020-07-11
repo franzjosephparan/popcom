@@ -152,6 +152,7 @@ class BatchInventoryController extends BaseController
             'receiving_facility_id' => 'required',
             'supplying_facility_id' => 'required',
             'items' => 'required',
+            'expected_delivery_date' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -161,7 +162,8 @@ class BatchInventoryController extends BaseController
                 $request->input('receiving_facility_id'),
                 $request->input('supplying_facility_id'),
                 $request->input('items'),
-                $request->input('message')
+                $request->input('message'),
+                $request->input('expected_delivery_date')
             );
         }
 

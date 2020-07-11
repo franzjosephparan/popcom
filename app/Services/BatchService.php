@@ -204,7 +204,8 @@ class BatchService {
         $receiving_facility_id,
         $supplying_facility_id,
         $items,
-        $message
+        $message,
+        $expected_delivery_date
     ) {
         $success = 0;
         $errors = [];
@@ -216,6 +217,7 @@ class BatchService {
             $inventory_request->receiving_facility_id = $receiving_facility_id;
             $inventory_request->supplying_facility_id = $supplying_facility_id;
             $inventory_request->message = $message;
+            $inventory_request->expected_delivery_date = Carbon::createFromTimestamp($expected_delivery_date)->toDateTimeString();;
             $inventory_request->created_by = $this->authenticated_user->id;
             $inventory_request->save();
             $final_data = $inventory_request;
