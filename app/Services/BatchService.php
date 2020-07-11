@@ -237,7 +237,7 @@ class BatchService {
             $success = 1;
             DB::commit();
         } catch (\Exception $ex) {
-            $errors = 'An error occurred';
+            $errors = $ex->getMessage();
             DB::rollBack();
         }
 
