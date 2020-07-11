@@ -176,6 +176,7 @@ class BatchInventoryController extends BaseController
 
     public function edit_request(Request $request) {
         $validator = Validator::make($request->all(), [
+            'request_inventory_id' => 'required',
             'receiving_facility_id' => 'required',
             'supplying_facility_id' => 'required',
             'items' => 'required',
@@ -185,7 +186,8 @@ class BatchInventoryController extends BaseController
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
         } else {
-            $response = $this->batch_service->request_inventory(
+            $response = $this->batch_service->edit_request(
+                $request->input('request_inventory_id'),
                 $request->input('receiving_facility_id'),
                 $request->input('supplying_facility_id'),
                 $request->input('items'),

@@ -256,7 +256,69 @@ class BatchService {
         $message,
         $expected_delivery_date
     ) {
+        $success = 0;
+        $errors = [];
+        $data = [];
 
+        DB::beginTransaction();
+        try {
+            $inventory_request = InventoryRequest::find($request_inventory_id);
+            $inventory_request->receiving_facility_id = $receiving_facility_id;
+            $inventory_request->supplying_facility_id = $supplying_facility_id;
+            $inventory_request->message = $message;
+            $inventory_request->expected_delivery_date = Carbon::createFromTimestamp($expected_delivery_date)->toDateTimeString();;
+            $inventory_request->updated_by = $this->authenticated_user->id;
+            $inventory_request->save();
+            $final_data = $inventory_request;
+            $temp_items = [];
+
+            foreach ($items as $item) {
+                $inventory_request_line = InventoryRequestLine::where('inventory_request_id', $request_inventory_id)->where('item_id', $item['item_id'])->get()->toArray();
+
+                if (! empty($inventory_request_line))
+                    $inventory_request_line = $inventory_request_line[0];
+
+                if (empty($inventory_request_line)) {
+                    $inventory_request_line = new InventoryRequestLine();
+                    $inventory_request_line->inventory_request_id = $inventory_request->id;
+                    $inventory_request_line->item_id = $item['item_id'];
+                    $inventory_request_line->quantity = $item['quantity'];
+                    $inventory_request_line->uom = $item['uom'];
+                    $inventory_request_line->created_by = $this->authenticated_user->id;
+                    $inventory_request_line->save();
+                    $final_data['items'][] = $inventory_request_line;
+                } else {
+                    $inventory_request_line = InventoryRequestLine::find($inventory_request_line['id']);
+                    $inventory_request_line->item_id = $item['item_id'];
+                    $inventory_request_line->quantity = $item['quantity'];
+                    $inventory_request_line->uom = $item['uom'];
+                    $inventory_request_line->updated_by = $this->authenticated_user->id;
+                    $inventory_request_line->save();
+                    $final_data['items'][] = $inventory_request_line;
+                }
+
+                array_push($temp_items, $item['item_id']);
+            }
+
+            foreach ($inventory_request->items as $item) {
+                if (! in_array($item->item_id, $temp_items)) {
+                    $inventory_request_line = InventoryRequestLine::find($item->id)->forceDelete();
+                }
+            }
+
+            $data = $final_data;
+            $success = 1;
+            DB::commit();
+        } catch (\Exception $ex) {
+            $errors = $ex->getMessage();
+            DB::rollBack();
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
     }
 
     public function view_requests($facility_id) {
