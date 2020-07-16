@@ -40,7 +40,7 @@ class BatchService {
             $batch->quantity = $quantity;
             $batch->uom = $uom;
             $batch->expiration_date = Carbon::createFromTimestamp($expiration_date)->toDateTimeString();
-            $batch->status = 1;
+            $batch->status = '';
             $batch->created_by = $this->authenticated_user->id;
             $batch->save();
 
@@ -119,7 +119,7 @@ class BatchService {
             foreach ($items as $key => $item) {
                 $batch = BatchInventory::where('item_id', $item['id'])
                     ->where('facility_id', $facility_id)
-                    ->where('status', 1)->get();
+                    ->where('active', 1)->get();
 
                 $inventory[] = [
                     'item' => $item,
@@ -146,7 +146,7 @@ class BatchService {
         $data = [];
 
         try {
-            $batch = BatchInventory::with('item')->where('id', $batch_id)->where('status', 1)->get();
+            $batch = BatchInventory::with('item')->where('id', $batch_id)->where('active', 1)->get();
             $data = $batch;
             $success = 1;
         } catch (\Exception $ex) {
@@ -166,7 +166,7 @@ class BatchService {
         $data = [];
 
         try {
-            $batches = BatchInventory::with('item')->where('facility_id', $facility_id)->where('status', 1)->get();
+            $batches = BatchInventory::with('item')->where('facility_id', $facility_id)->where('active', 1)->get();
             $data = $batches;
             $success = 1;
         } catch (\Exception $ex) {
@@ -186,7 +186,7 @@ class BatchService {
         $data = [];
 
         try {
-            $batches = BatchInventory::with('item')->where('item_id', $item_id)->where('status', 1)->get();
+            $batches = BatchInventory::with('item')->where('item_id', $item_id)->where('active', 1)->get();
             $data = $batches;
             $success = 1;
         } catch (\Exception $ex) {
