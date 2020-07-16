@@ -505,6 +505,11 @@ class BatchService {
             $transfer->updated_by = $this->authenticated_user->id;
             $transfer->save();
 
+            $batch = InventoryRequest::find($transfer->request->toArray()[0]['id']);
+            $batch->status = 'in transit';
+            $batch->updated_by = $this->authenticated_user->id;
+            $batch->save();
+
             $data = $transfer;
             $success = 1;
             DB::commit();
@@ -563,6 +568,7 @@ class BatchService {
                 $request = $request[0];
 
             $request = InventoryRequest::find($request['id']);
+            $request->status = 'received';
             $request->active = 0;
             $request->updated_by = $this->authenticated_user->id;
             $request->save();
