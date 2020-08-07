@@ -10,7 +10,8 @@
         "darkaonline/swagger-lume": "7.*",
         "doctrine/dbal": "^2.10",
         "laravel/lumen-framework": "^7.0",
-        "laravel/ui": "^2.0"
+        "laravel/ui": "^2.0",
+        "phpoffice/phpspreadsheet": "^1.14"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.9.1",

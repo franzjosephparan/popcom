@@ -42,6 +42,7 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
     $router->post('/get-batch', ['uses' => 'BatchInventoryController@get_batch']);
     $router->post('/get-facility-batches', ['uses' => 'BatchInventoryController@get_facility_batches']);
     $router->post('/get-item-batches', ['uses' => 'BatchInventoryController@get_item_batches']);
+    // supply chain
     $router->post('/request-inventory', ['uses' => 'BatchInventoryController@request_inventory']);
     $router->post('/edit-request', ['uses' => 'BatchInventoryController@edit_request']);
     $router->post('/cancel-request', ['uses' => 'BatchInventoryController@cancel_request']);
@@ -52,4 +53,9 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
     $router->post('/update-transfer-status', ['uses' => 'BatchInventoryController@update_transfer_status']);
     $router->post('/receive-inventory', ['uses' => 'BatchInventoryController@receive_inventory']);
     $router->post('/get-to-receive-inventory', ['uses' => 'BatchInventoryController@get_to_receive_inventory']);
+    // ledger
+    $router->post('/get-facility-ledger', ['uses' => 'LedgerController@get_facility_ledger']);
+    $router->post('/get-batch-ledger', ['uses' => 'LedgerController@get_batch_ledger']);
+    // report
+    $router->post('/generate-report', ['uses' => 'Controller@generate_report']);
 });
