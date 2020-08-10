@@ -11,7 +11,8 @@
         "doctrine/dbal": "^2.10",
         "laravel/lumen-framework": "^7.0",
         "laravel/ui": "^2.0",
-        "phpoffice/phpspreadsheet": "^1.14"
+        "phpoffice/phpspreadsheet": "^1.14",
+      "ext-curl": "*"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.9.1",
