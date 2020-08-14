@@ -134,33 +134,32 @@ class ReportService {
         $month2_issued = 0;
         $month3_issued = 0;
 
-        print_r($facility_batch);
-        exit;
-
         foreach ($facility_batch as $batch) {
-            if ($batch['item']['category'] == $category) {
-                foreach ($batch['ledger'] as $ledger) {
-                    $date = new Carbon($ledger['created_at']);
-                    $date->setTimezone('Asia/Manila');
+            if (! empty($batch['item']['category'])) {
+                if ($batch['item']['category'] == $category) {
+                    foreach ($batch['ledger'] as $ledger) {
+                        $date = new Carbon($ledger['created_at']);
+                        $date->setTimezone('Asia/Manila');
 
-                    if (! $date->between($this->start_quarter, $this->end_quarter)) {
-                        $starting += $ledger['quantity'];
-                    } else {
-                        if ($ledger['transaction_type'] == 'receive') {
-                            $received += $ledger['quantity'];
-                        } else if ($ledger['transaction_type'] == 'adjustment') {
-                            if ($ledger['quantity'] > 0) {
-                                $additions += $ledger['quantity'];
-                            } else {
-                                $subtractions += $ledger['quantity'];
-                            }
-                        } else if ($ledger['transaction_type'] == 'dispense') {
-                            if ($date->between($this->months[0]->firstOfMonth(), $this->months[0]->endOfMonth())) {
-                                $month1_issued += abs($ledger['quantity']);
-                            } else if ($date->between($this->months[3], $this->months[4])) {
-                                $month2_issued += abs($ledger['quantity']);
-                            } else if ($date->between($this->months[2]->firstOfMonth(), $this->months[2]->endOfMonth())) {
-                                $month3_issued += abs($ledger['quantity']);
+                        if (!$date->between($this->start_quarter, $this->end_quarter)) {
+                            $starting += $ledger['quantity'];
+                        } else {
+                            if ($ledger['transaction_type'] == 'receive') {
+                                $received += $ledger['quantity'];
+                            } else if ($ledger['transaction_type'] == 'adjustment') {
+                                if ($ledger['quantity'] > 0) {
+                                    $additions += $ledger['quantity'];
+                                } else {
+                                    $subtractions += $ledger['quantity'];
+                                }
+                            } else if ($ledger['transaction_type'] == 'dispense') {
+                                if ($date->between($this->months[0]->firstOfMonth(), $this->months[0]->endOfMonth())) {
+                                    $month1_issued += abs($ledger['quantity']);
+                                } else if ($date->between($this->months[3], $this->months[4])) {
+                                    $month2_issued += abs($ledger['quantity']);
+                                } else if ($date->between($this->months[2]->firstOfMonth(), $this->months[2]->endOfMonth())) {
+                                    $month3_issued += abs($ledger['quantity']);
+                                }
                             }
                         }
                     }
