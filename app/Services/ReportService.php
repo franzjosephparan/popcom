@@ -134,9 +134,11 @@ class ReportService {
         $month2_issued = 0;
         $month3_issued = 0;
 
+        print_r($facility_batch);
+        exit;
+
         foreach ($facility_batch as $batch) {
             if ($batch['item']['category'] == $category) {
-
                 foreach ($batch['ledger'] as $ledger) {
                     $date = new Carbon($ledger['created_at']);
                     $date->setTimezone('Asia/Manila');
