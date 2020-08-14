@@ -31,7 +31,7 @@ class ItemController extends BaseController
                 $request->input('item_name'),
                 $request->input('item_description'),
                 $request->input('category'),
-                $request->file('image')
+                $request->input('image')
             );
         }
 
