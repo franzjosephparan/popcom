@@ -31,6 +31,10 @@ class ReportService {
         $coc_pills_data = $this->getData($facility_batch, 'progestin only pills');
         $pop_pills_data = $this->getData($facility_batch, 'combined oral contraceptive');
         $dmpa_data = $this->getData($facility_batch, 'dmpa');
+        
+        print_r($dmpa_data);
+        exit;
+
         $iud_data = $this->getData($facility_batch, 'intrauterine device');
         $implant_data = $this->getData($facility_batch, 'porgestin sub-dermal implant');
         $male_condom_data = $this->getData($facility_batch, 'male condom');
