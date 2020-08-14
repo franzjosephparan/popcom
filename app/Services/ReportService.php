@@ -118,7 +118,7 @@ class ReportService {
         $spreadsheet->getActiveSheet()->setCellValue('A26', 'Email Address: ' . $this->authenticated_user->email);
 
         $date = new Carbon();
-        $filename = $date->format('m-d-Y') . strtolower(preg_replace(' ', '-', $this->facility->facility_name)) . '-report.xlsx';
+        $filename = $date->format('m-d-Y') . '-' . strtolower(preg_replace("/[\s]/", '-', $this->facility->facility_name)) . '-report.xlsx';
         $writer->save($filename);
 
         return $filename;
