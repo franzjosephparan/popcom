@@ -26,7 +26,7 @@ class ReportService {
     public function generate_report($facility_id) {
         $this->setDates();
         $this->setFacility($facility_id);
-        $facility_batch = BatchInventory::where('facility_id', $facility_id)->where('status', 1)->where('active', 1)->with('item')->with('ledger')->get()->toArray();
+        $facility_batch = BatchInventory::where('facility_id', $facility_id)->where('status', 1)->with('item')->with('ledger')->get()->toArray();
 
         $coc_pills_data = $this->getData($facility_batch, 'progestin only pills');
         $pop_pills_data = $this->getData($facility_batch, 'combined oral contraceptive');
