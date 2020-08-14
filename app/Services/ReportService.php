@@ -36,6 +36,9 @@ class ReportService {
         $male_condom_data = $this->getData($facility_batch, 'male condom');
         $female_condom_data = $this->getData($facility_batch, 'female condom');
 
+        print_r($male_condom_data);
+        exit;
+
         $spreadsheet = IOFactory::load(public_path('assets/report.xlsx'));
         $writer = new Xlsx($spreadsheet);
 
