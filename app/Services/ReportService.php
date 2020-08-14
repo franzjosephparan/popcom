@@ -144,6 +144,9 @@ class ReportService {
                         if (!$date->between($this->start_quarter, $this->end_quarter)) {
                             $starting += $ledger['quantity'];
                         } else {
+                            if ($ledger['transaction_type'] == 'starting') {
+                                $additions += $ledger['quantity'];
+                            }
                             if ($ledger['transaction_type'] == 'receive') {
                                 $received += $ledger['quantity'];
                             } else if ($ledger['transaction_type'] == 'adjustment') {
