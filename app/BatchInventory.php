@@ -14,4 +14,8 @@ class BatchInventory extends Model
     public function item() {
         return $this->hasOne('App\Item', 'id', 'item_id');
     }
+
+    public function ledger() {
+        return $this->hasMany('App\InventoryLedger', 'batch_inventory_id', 'id');
+    }
 }

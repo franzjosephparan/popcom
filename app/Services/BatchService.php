@@ -107,6 +107,44 @@ class BatchService {
         ];
     }
 
+    public function dispense_inventory($batch_id, $quantity) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        DB::beginTransaction();
+        try {
+            $batch = BatchInventory::find($batch_id);
+            $previous_quant = $batch->quantity;
+            $batch->quantity = $previous_quant - $quantity;
+            $batch->updated_by = $this->authenticated_user->id;
+            $batch->save();
+
+            $ledger = new InventoryLedger();
+            $ledger->batch_inventory_id = $batch->id;
+            $ledger->item_id = $batch->item_id;
+            $ledger->facility_id = $batch->facility_id;
+            $ledger->quantity = (int)$quantity * -1;
+            $ledger->uom = $batch->uom;
+            $ledger->transaction_type = 'dispense';
+            $ledger->created_by = $this->authenticated_user->id;
+            $ledger->save();
+
+            $data = $batch;
+            $success = 1;
+            DB::commit();
+        } catch (\Exception $ex) {
+            $errors = 'An error occurred';
+            DB::rollBack();
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
     public function get_inventory($facility_id) {
         $success = 0;
         $errors = [];

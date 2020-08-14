@@ -33,8 +33,7 @@ try {
     curl_exec($ch);
     curl_close($ch);
 } catch (\Exception $e) {
-    print_r($e->getMessage());
-    exit;
+
 }
 
 $app->run();

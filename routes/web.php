@@ -43,6 +43,7 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
     $router->post('/get-facility-batches', ['uses' => 'BatchInventoryController@get_facility_batches']);
     $router->post('/get-item-batches', ['uses' => 'BatchInventoryController@get_item_batches']);
     // supply chain
+    $router->post('/dispense-inventory', ['uses' => 'BatchInventoryController@dispense_inventory']);
     $router->post('/request-inventory', ['uses' => 'BatchInventoryController@request_inventory']);
     $router->post('/edit-request', ['uses' => 'BatchInventoryController@edit_request']);
     $router->post('/cancel-request', ['uses' => 'BatchInventoryController@cancel_request']);
@@ -57,5 +58,5 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
     $router->post('/get-facility-ledger', ['uses' => 'LedgerController@get_facility_ledger']);
     $router->post('/get-batch-ledger', ['uses' => 'LedgerController@get_batch_ledger']);
     // report
-    $router->post('/generate-report', ['uses' => 'Controller@generate_report']);
+    $router->post('/generate-report', ['uses' => 'ReportController@generate_report']);
 });
