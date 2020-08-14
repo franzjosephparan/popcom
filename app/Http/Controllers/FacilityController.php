@@ -187,4 +187,35 @@ class FacilityController extends BaseController
             'data' => $response['data'] ?? []
         ]);
     }
+
+    public function add_facility_user(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'facility_id' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'contact_number' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->facility_service->add_facility_user(
+                $request->input('facility_id'),
+                $request->input('first_name'),
+                $request->input('last_name'),
+                $request->input('contact_number'),
+                $request->input('email'),
+                $request->input('password'),
+                $request->input('image')
+            );
+        }
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data'] ?? []
+        ]);
+    }
 }

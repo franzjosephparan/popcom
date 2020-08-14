@@ -30,6 +30,7 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
     $router->post('/get-facility', ['uses' => 'FacilityController@get_facility']);
     $router->get('/get-facilities', ['uses' => 'FacilityController@get_facilities']);
     $router->post('/get-facility-users', ['uses' => 'FacilityController@get_facility_users']);
+    $router->post('/add-facility-user', ['uses' => 'FacilityController@add_facility_user']);
     // items
     $router->post('/create-item', ['uses' => 'ItemController@create']);
     $router->post('/edit-item', ['uses' => 'ItemController@edit']);

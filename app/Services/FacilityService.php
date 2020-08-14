@@ -261,4 +261,56 @@ class FacilityService {
             'data' => $data
         ];
     }
+
+    public function add_facility_user(
+        $facility_id,
+        $first_name,
+        $last_name,
+        $contact_number,
+        $email,
+        $password,
+        $image
+    ) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        try {
+            $user = new User();
+            $user->facility_id = $facility_id;
+            $user->first_name = $first_name;
+            $user->last_name = $last_name;
+            $user->contact_number = $contact_number;
+            $user->email = $email;
+            $user->password = Hash::make($password);
+            $user->roles = 'representative';
+            $user->status = 1;
+            $user->created_by = $this->authenticated_user->id;
+            $user->api_token = Str::random(60);
+
+            if (! empty($image)) {
+                $extension = explode('/', mime_content_type($image))[1];
+                $file_name = Str::random(20) . '.' . $extension;
+
+                if (file_exists(public_path('images'))) {
+                    file_put_contents(public_path('images') . '/' . $file_name, file_get_contents($image));
+                    $user->image = $file_name;
+                }
+            }
+            $user->save();
+
+            $success = 1;
+            $data = [
+                'user' => $user
+            ];
+        } catch (\Exception $ex) {
+            $errors = 'An error occurred';
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
 }
