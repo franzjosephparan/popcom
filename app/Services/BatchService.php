@@ -592,6 +592,7 @@ class BatchService {
                 $ledger = new InventoryLedger();
                 $ledger->batch_inventory_id = $batch->id;
                 $ledger->item_id = $batch->item_id;
+                $ledger->inventory_transfer_id = $inventory_transfer_id;
                 $ledger->facility_id = $batch->facility_id;
                 $ledger->quantity = $batch->quantity;
                 $ledger->uom = $batch->uom;

@@ -26,7 +26,7 @@ class ReportService {
     public function generate_report($facility_id) {
         $this->setDates();
         $this->setFacility($facility_id);
-        $facility_batch = BatchInventory::where('facility_id', $facility_id)->where('status', 1)->with('item')->with('ledger')->get()->toArray();
+        $facility_batch = BatchInventory::where('facility_id', $facility_id)->where('status', 1)->with('item')->with('ledger.transfer.supplier')->get()->toArray();
 
         $coc_pills_data = $this->getData($facility_batch, 'progestin only pills');
         $pop_pills_data = $this->getData($facility_batch, 'combined oral contraceptive');
@@ -51,7 +51,7 @@ class ReportService {
         $spreadsheet->getActiveSheet()->setCellValue('J10', strtoupper($this->months[2]->format('F')));
         // set coc pills
         $spreadsheet->getActiveSheet()->setCellValue('B11', $coc_pills_data['starting']);
-        $spreadsheet->getActiveSheet()->setCellValue('C11', 0);
+        $spreadsheet->getActiveSheet()->setCellValue('C11', $coc_pills_data['received_central']);
         $spreadsheet->getActiveSheet()->setCellValue('D11', $coc_pills_data['received']);
         $spreadsheet->getActiveSheet()->setCellValue('E11', $coc_pills_data['additions']);
         $spreadsheet->getActiveSheet()->setCellValue('F11', $coc_pills_data['subtractions']);
@@ -60,7 +60,7 @@ class ReportService {
         $spreadsheet->getActiveSheet()->setCellValue('J11', $coc_pills_data['month3_issued']);
         // set pop pills
         $spreadsheet->getActiveSheet()->setCellValue('B12', $pop_pills_data['starting']);
-        $spreadsheet->getActiveSheet()->setCellValue('C12', 0);
+        $spreadsheet->getActiveSheet()->setCellValue('C12', $pop_pills_data['received_central']);
         $spreadsheet->getActiveSheet()->setCellValue('D12', $pop_pills_data['received']);
         $spreadsheet->getActiveSheet()->setCellValue('E12', $pop_pills_data['additions']);
         $spreadsheet->getActiveSheet()->setCellValue('F12', $pop_pills_data['subtractions']);
@@ -69,7 +69,7 @@ class ReportService {
         $spreadsheet->getActiveSheet()->setCellValue('J12', $pop_pills_data['month3_issued']);
         // set dmpa
         $spreadsheet->getActiveSheet()->setCellValue('B13', $dmpa_data['starting']);
-        $spreadsheet->getActiveSheet()->setCellValue('C13', 0);
+        $spreadsheet->getActiveSheet()->setCellValue('C13', $dmpa_data['received_central']);
         $spreadsheet->getActiveSheet()->setCellValue('D13', $dmpa_data['received']);
         $spreadsheet->getActiveSheet()->setCellValue('E13', $dmpa_data['additions']);
         $spreadsheet->getActiveSheet()->setCellValue('F13', $dmpa_data['subtractions']);
@@ -78,7 +78,7 @@ class ReportService {
         $spreadsheet->getActiveSheet()->setCellValue('J13', $dmpa_data['month3_issued']);
         // set iud
         $spreadsheet->getActiveSheet()->setCellValue('B14', $iud_data['starting']);
-        $spreadsheet->getActiveSheet()->setCellValue('C14', 0);
+        $spreadsheet->getActiveSheet()->setCellValue('C14', $iud_data['received_central']);
         $spreadsheet->getActiveSheet()->setCellValue('D14', $iud_data['received']);
         $spreadsheet->getActiveSheet()->setCellValue('E14', $iud_data['additions']);
         $spreadsheet->getActiveSheet()->setCellValue('F14', $iud_data['subtractions']);
@@ -87,7 +87,7 @@ class ReportService {
         $spreadsheet->getActiveSheet()->setCellValue('J14', $iud_data['month3_issued']);
         // set implant
         $spreadsheet->getActiveSheet()->setCellValue('B15', $implant_data['starting']);
-        $spreadsheet->getActiveSheet()->setCellValue('C15', 0);
+        $spreadsheet->getActiveSheet()->setCellValue('C15', $implant_data['received_central']);
         $spreadsheet->getActiveSheet()->setCellValue('D15', $implant_data['received']);
         $spreadsheet->getActiveSheet()->setCellValue('E15', $implant_data['additions']);
         $spreadsheet->getActiveSheet()->setCellValue('F15', $implant_data['subtractions']);
@@ -96,7 +96,7 @@ class ReportService {
         $spreadsheet->getActiveSheet()->setCellValue('J15', $implant_data['month3_issued']);
         // set male condom
         $spreadsheet->getActiveSheet()->setCellValue('B16', $male_condom_data['starting']);
-        $spreadsheet->getActiveSheet()->setCellValue('C16', 0);
+        $spreadsheet->getActiveSheet()->setCellValue('C16', $male_condom_data['received_central']);
         $spreadsheet->getActiveSheet()->setCellValue('D16', $male_condom_data['received']);
         $spreadsheet->getActiveSheet()->setCellValue('E16', $male_condom_data['additions']);
         $spreadsheet->getActiveSheet()->setCellValue('F16', $male_condom_data['subtractions']);
@@ -105,7 +105,7 @@ class ReportService {
         $spreadsheet->getActiveSheet()->setCellValue('J16', $male_condom_data['month3_issued']);
         // set male condom
         $spreadsheet->getActiveSheet()->setCellValue('B17', $female_condom_data['starting']);
-        $spreadsheet->getActiveSheet()->setCellValue('C17', 0);
+        $spreadsheet->getActiveSheet()->setCellValue('C17', $female_condom_data['received_central']);
         $spreadsheet->getActiveSheet()->setCellValue('D17', $female_condom_data['received']);
         $spreadsheet->getActiveSheet()->setCellValue('E17', $female_condom_data['additions']);
         $spreadsheet->getActiveSheet()->setCellValue('F17', $female_condom_data['subtractions']);
@@ -127,6 +127,7 @@ class ReportService {
     private function getData($facility_batch, $category) {
         // male condom
         $starting = 0;
+        $received_central = 0;
         $received = 0;
         $additions = 0;
         $subtractions = 0;
@@ -148,7 +149,13 @@ class ReportService {
                                 $additions += $ledger['quantity'];
                             }
                             if ($ledger['transaction_type'] == 'receive') {
-                                $received += $ledger['quantity'];
+                                if (! empty($ledger['transfer']['supplier'])) {
+                                    if ($ledger['transfer']['supplier']['facility_type'] == 'CHO') {
+                                        $received_central += $ledger['quantity'];
+                                    } else {
+                                        $received += $ledger['quantity'];
+                                    }
+                                }
                             } else if ($ledger['transaction_type'] == 'adjustment') {
                                 if ($ledger['quantity'] > 0) {
                                     $additions += $ledger['quantity'];
@@ -172,12 +179,13 @@ class ReportService {
 
         return [
             'starting' => $starting,
+            'received_central' => $received_central,
             'received' => $received,
             'additions' => $additions,
             'subtractions' => $subtractions,
             'month1_issued' => $month1_issued,
             'month2_issued' => $month2_issued,
-            'month3_issued' => $month3_issued
+            'month3_issued' => $month3_issued,
         ];
     }
 

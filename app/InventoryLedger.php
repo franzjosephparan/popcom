@@ -18,4 +18,8 @@ class InventoryLedger extends Model
     public function batch() {
         return $this->hasOne('App\BatchInventory', 'id', 'batch_inventory_id');
     }
+
+    public function transfer() {
+        return $this->hasOne('App\InventoryTransfer', 'id', 'inventory_transfer_id');
+    }
 }

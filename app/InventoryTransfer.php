@@ -18,4 +18,8 @@ class InventoryTransfer extends Model
     public function request() {
         return $this->hasMany('App\InventoryRequest', 'inventory_transfer_id', 'id');
     }
+
+    public function supplier() {
+        return $this->hasOne('App\Facility', 'id', 'supplying_facility_id');
+    }
 }
