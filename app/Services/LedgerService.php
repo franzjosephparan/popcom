@@ -78,4 +78,33 @@ class LedgerService {
             'data' => $data
         ];
     }
+
+    public function get_total_dispense_count() {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        try {
+            if ($this->authenticated_user->roles == 'admin') {
+                $count = count(InventoryLedger::where('transaction_type', 'dispense')->get()->toArray());
+            } else {
+                $count = count(InventoryLedger::where('transaction_type', 'dispense')
+                    ->where('facility_id', $this->authenticated_user->facility_id)
+                    ->get()
+                    ->toArray()
+                );
+            }
+
+            $success = 1;
+            $data = ['count' => $count];
+        } catch (\Exception $e) {
+            $errors = $e->getMessage();
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
 }

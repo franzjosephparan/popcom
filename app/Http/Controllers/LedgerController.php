@@ -60,4 +60,14 @@ class LedgerController extends BaseController
             'data' => $response['data'] ?? []
         ]);
     }
+
+    public function get_total_dispense_count() {
+        $response = $this->ledger_service->get_total_dispense_count();
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? [],
+            'data' => $response['data'] ?? []
+        ]);
+    }
 }

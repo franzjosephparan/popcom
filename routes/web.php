@@ -58,6 +58,7 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
     // ledger
     $router->post('/get-facility-ledger', ['uses' => 'LedgerController@get_facility_ledger']);
     $router->post('/get-batch-ledger', ['uses' => 'LedgerController@get_batch_ledger']);
+    $router->post('/get-total-dispense-count', ['uses' => 'LedgerController@get_total_dispense_count']);
     // report
     $router->post('/generate-report', ['uses' => 'ReportController@generate_report']);
 });
