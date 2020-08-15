@@ -21,6 +21,7 @@ class LedgerService {
                 ->orderby('created_at', 'desc')
                 ->with('user')
                 ->with('item')
+                ->with('facility')
                 ->get()
                 ->toArray();
         } else {
@@ -30,6 +31,7 @@ class LedgerService {
                 ->orderby('created_at', 'desc')
                 ->width('user')
                 ->with('item')
+                ->with('facility')
                 ->get()
                 ->toArray();
         }
