@@ -85,14 +85,23 @@ class LedgerService {
         $data = [];
 
         try {
+            $count = 0;
+
             if ($this->authenticated_user->roles == 'admin') {
-                $count = count(InventoryLedger::where('transaction_type', 'dispense')->get()->toArray());
+                $dispenses = InventoryLedger::where('transaction_type', 'dispense')->get()->toArray();
+
+                foreach ($dispenses as $dispense) {
+                    $count += abs($dispense['quantity']);
+                }
             } else {
-                $count = count(InventoryLedger::where('transaction_type', 'dispense')
+                $dispenses = InventoryLedger::where('transaction_type', 'dispense')
                     ->where('facility_id', $this->authenticated_user->facility_id)
                     ->get()
-                    ->toArray()
-                );
+                    ->toArray();
+
+                foreach ($dispenses as $dispense) {
+                    $count += abs($dispense['quantity']);
+                }
             }
 
             $success = 1;
