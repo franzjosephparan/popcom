@@ -43,6 +43,7 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
     $router->post('/get-batch', ['uses' => 'BatchInventoryController@get_batch']);
     $router->post('/get-facility-batches', ['uses' => 'BatchInventoryController@get_facility_batches']);
     $router->post('/get-item-batches', ['uses' => 'BatchInventoryController@get_item_batches']);
+    $router->post('/get-total-inventory-count', ['uses' => 'BatchInventoryController@get_total_inventory_count']);
     // supply chain
     $router->post('/dispense-inventory', ['uses' => 'BatchInventoryController@dispense_inventory']);
     $router->post('/request-inventory', ['uses' => 'BatchInventoryController@request_inventory']);

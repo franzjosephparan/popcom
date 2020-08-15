@@ -387,4 +387,14 @@ class BatchInventoryController extends BaseController
             'data' => $response['data'] ?? []
         ]);
     }
+
+    public function get_total_inventory_count() {
+        $response = $this->batch_service->get_total_inventory_count();
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? [],
+            'data' => $response['data'] ?? []
+        ]);
+    }
 }

@@ -649,4 +649,39 @@ class BatchService {
             'data' => $data
         ];
     }
+
+    public function get_total_inventory_count() {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        try {
+            $count = 0;
+
+            if ($this->authenticated_user->roles == 'admin') {
+                $batches = BatchInventory::all()->toArray();
+
+                foreach ($batches as $batch) {
+                    $count += $batch['quantity'];
+                }
+            } else {
+                $batches = BatchInventory::where('facility_id', $this->authenticated_user->facility_id)->get()->toArray();
+
+                foreach ($batches as $batch) {
+                    $count += $batch['quantity'];
+                }
+            }
+
+            $success = 1;
+            $data = ['count' => $count];
+        } catch (\Exception $e) {
+            $errors = $e->getMessage();
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
 }
