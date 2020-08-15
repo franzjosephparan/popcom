@@ -19,6 +19,8 @@ class LedgerService {
                 ->offset($offset)
                 ->limit($limit)
                 ->orderby('created_at', 'desc')
+                ->with('user')
+                ->with('item')
                 ->get()
                 ->toArray();
         } else {
@@ -26,6 +28,8 @@ class LedgerService {
                 ->offset($offset)
                 ->limit($limit)
                 ->orderby('created_at', 'desc')
+                ->width('user')
+                ->with('item')
                 ->get()
                 ->toArray();
         }
