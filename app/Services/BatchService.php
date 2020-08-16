@@ -458,32 +458,63 @@ class BatchService {
             $transfer->save();
             $final_data = $transfer->toArray();
 
+            $items = InventoryRequestLine::where('inventory_request_id', $request_inventory_id)->get()->toArray();
+
             foreach ($items as $item) {
-                $transfer_line = new InventoryTransferLine();
-                $transfer_line->inventory_transfer_id = $transfer->id;
-                $transfer_line->item_id = $item['item_id'];
-                $transfer_line->batch_inventory_id = $item['batch_inventory_id'];
-                $transfer_line->quantity = $item['quantity'];
-                $transfer_line->uom = $item['uom'];
-                $transfer_line->created_by = $this->authenticated_user->id;
-                $transfer_line->save();
+                $batches = BatchInventory::where('facility_id', $request->supplying_facility_id)
+                    ->where('item_id', $item['item_id'])->orderBy('created_at', 'asc')->get()->toArray();
 
-                $batch = BatchInventory::find($item['batch_inventory_id']);
-                $batch->quantity = (int)$batch->quantity - (int)$item['quantity'];
-                $batch->updated_by = $this->authenticated_user->id;
-                $batch->save();
+                $remaining = $item['quantity'];
 
-                $ledger = new InventoryLedger();
-                $ledger->batch_inventory_id = $batch->id;
-                $ledger->item_id = $batch->item_id;
-                $ledger->facility_id = $batch->facility_id;
-                $ledger->quantity = (int)$item['quantity'] * -1;
-                $ledger->uom = $batch->uom;
-                $ledger->transaction_type = 'transfer';
-                $ledger->created_by = $this->authenticated_user->id;
-                $ledger->save();
+                foreach ($batches as $batch) {
+                    $db_batch = BatchInventory::find($batch['id']);
+                    $new_quantity = $db_batch->quantity - $remaining;
 
-                $final_data['items'][] = $transfer_line;
+                    if ($new_quantity <= 0) {
+                        $remaining = abs($new_quantity);
+                        $provide = $db_batch->quantity;
+
+                        $db_batch->quantity = 0;
+                        $db_batch->updated_by = $this->authenticated_user->id;
+                        $db_batch->save();
+                    } else {
+                        $provide = $db_batch->quantity - $new_quantity;
+                        $remaining = 0;
+                        $db_batch->quantity = $new_quantity;
+                        $db_batch->updated_by = $this->authenticated_user->id;
+                        $db_batch->save();
+                    }
+
+                    $transfer_line = new InventoryTransferLine();
+                    $transfer_line->inventory_transfer_id = $transfer->id;
+                    $transfer_line->item_id = $item['item_id'];
+                    $transfer_line->batch_inventory_id = $batch['id'];
+                    $transfer_line->quantity = $provide;
+                    $transfer_line->uom = $item['uom'];
+                    $transfer_line->created_by = $this->authenticated_user->id;
+                    $transfer_line->save();
+
+                    $ledger = new InventoryLedger();
+                    $ledger->batch_inventory_id = $db_batch->id;
+                    $ledger->item_id = $db_batch->item_id;
+                    $ledger->facility_id = $db_batch->facility_id;
+                    $ledger->quantity = $provide;
+                    $ledger->uom = $db_batch->uom;
+                    $ledger->transaction_type = 'transfer';
+                    $ledger->created_by = $this->authenticated_user->id;
+                    $ledger->save();
+
+                    $final_data['items'][] = $transfer_line;
+                }
+
+                if ($remaining > 0)
+                    throw new \Exception('Not enough stock to transfer');
+
+
+//                $batch = BatchInventory::find($item['batch_inventory_id']);
+//                $batch->quantity = (int)$batch->quantity - (int)$item['quantity'];
+//                $batch->updated_by = $this->authenticated_user->id;
+//                $batch->save();
             }
 
             $request->status = 'accepted';
