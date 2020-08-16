@@ -1,7 +1,9 @@
 <?php
 namespace App\Services;
 
+use App\BatchInventory;
 use App\Facility;
+use App\InventoryLedger;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -150,7 +152,27 @@ class FacilityService {
         $data = [];
 
         try {
-            $facility = Facility::where('id', $facility_id)->with('user')->get();
+            $facility = Facility::where('id', $facility_id)->with('users')->get();
+            $batches = BatchInventory::where('facility_id', $facility_id)->get()->toArray();
+            $inventory_count = 0;
+
+            foreach ($batches as $batch) {
+                $inventory_count += $batch['quantity'];
+            }
+
+            $facility[0]['total_inventory_count'] = $inventory_count;
+
+            $dispenses = InventoryLedger::where('transaction_type', 'dispense')
+                ->where('facility_id', $facility_id)
+                ->get()
+                ->toArray();
+            $dispense_count = 0;
+
+            foreach ($dispenses as $dispense) {
+                $dispense_count += abs($dispense['quantity']);
+            }
+
+            $facility[0]['total_dispense_count'] = $dispense_count;
 
             if (! empty($facility)) {
                 $success = 1;
