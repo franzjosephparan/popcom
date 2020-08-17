@@ -202,7 +202,6 @@ class UserService {
 
     public function edit(
         $user_id,
-        $facility_id,
         $first_name,
         $last_name,
         $contact_number,
@@ -218,7 +217,6 @@ class UserService {
 
             if (! empty($user)) {
                 try {
-                    $user->facility_id = $facility_id;
                     $user->first_name = $first_name;
                     $user->last_name = $last_name;
                     $user->email = $email;
