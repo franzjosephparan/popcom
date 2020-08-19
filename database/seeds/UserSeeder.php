@@ -1,9 +1,7 @@
 <?php
 
-use App\Item;
 use Illuminate\Database\Seeder;
 use App\User;
-use App\Facility;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 

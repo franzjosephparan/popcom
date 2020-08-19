@@ -28,13 +28,13 @@ class ReportService {
         $this->setFacility($facility_id);
         $facility_batch = BatchInventory::where('facility_id', $facility_id)->where('status', 1)->with('item')->with('ledger.transfer.supplier')->get()->toArray();
 
-        $coc_pills_data = $this->getData($facility_batch, 'progestin only pills');
-        $pop_pills_data = $this->getData($facility_batch, 'combined oral contraceptive');
-        $dmpa_data = $this->getData($facility_batch, 'dmpa');
-        $iud_data = $this->getData($facility_batch, 'intrauterine device');
-        $implant_data = $this->getData($facility_batch, 'porgestin sub-dermal implant');
-        $male_condom_data = $this->getData($facility_batch, 'male condom');
-        $female_condom_data = $this->getData($facility_batch, 'female condom');
+        $coc_pills_data = $this->getData($facility_batch, '1');
+        $pop_pills_data = $this->getData($facility_batch, '2');
+        $dmpa_data = $this->getData($facility_batch, '3');
+        $iud_data = $this->getData($facility_batch, '5');
+        $implant_data = $this->getData($facility_batch, '4');
+        $male_condom_data = $this->getData($facility_batch, '6');
+        $female_condom_data = $this->getData($facility_batch, '7');
 
         $spreadsheet = IOFactory::load(public_path('assets/report.xlsx'));
         $writer = new Xlsx($spreadsheet);
