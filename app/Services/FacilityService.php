@@ -153,7 +153,7 @@ class FacilityService {
         $data = [];
 
         try {
-            $facility = Facility::where('id', $facility_id)->with('users')->get();
+            $facility = Facility::where('id', $facility_id)->with('users')->with('type')->get();
             $batches = BatchInventory::where('facility_id', $facility_id)->get()->toArray();
             $inventory_count = 0;
 
@@ -198,7 +198,7 @@ class FacilityService {
         $data = [];
 
         try {
-            $facilities = Facility::all();
+            $facilities = Facility::with('type')->get();
             $success = 1;
             $data = $facilities;
         } catch (\Exception $ex) {
