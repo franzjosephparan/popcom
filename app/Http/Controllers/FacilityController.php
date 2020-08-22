@@ -218,4 +218,14 @@ class FacilityController extends BaseController
             'data' => $response['data'] ?? []
         ]);
     }
+
+    public function get_facility_types() {
+        $response = $this->facility_service->get_facility_types();
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? [],
+            'data' => $response['data'] ?? []
+        ]);
+    }
 }

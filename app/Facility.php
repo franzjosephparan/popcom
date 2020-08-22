@@ -13,4 +13,8 @@ class Facility extends Model
     public function users() {
         return $this->hasMany('App\User', 'facility_id', 'id');
     }
+
+    public function type() {
+        return $this->hasOne('App\FacilityType', 'id', 'facility_type');
+    }
 }

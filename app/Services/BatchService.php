@@ -545,7 +545,7 @@ class BatchService {
 
         DB::beginTransaction();
         try {
-            $transfers = InventoryTransfer::where('supplying_facility_id', $facility_id)->with('lines.item', 'request')->get();
+            $transfers = InventoryTransfer::where('receiving_facility_id', $facility_id)->with('lines.item', 'request')->get();
 
             $data = $transfers;
             $success = 1;

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCategoriesTable extends Migration
+class UpdateFacilityTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ class CreateCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('category_name')->unique();
-            $table->string('hex_code')->nullable();
-            $table->timestamps();
+        Schema::table('facilities', function (Blueprint $table) {
+            $table->integer('facility_type')->change();
         });
     }
 
@@ -28,6 +25,8 @@ class CreateCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('categories');
+        Schema::table('facilities', function (Blueprint $table) {
+            //
+        });
     }
 }

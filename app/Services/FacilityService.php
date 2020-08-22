@@ -8,6 +8,7 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\FacilityType;
 
 class FacilityService {
     private $authenticated_user;
@@ -325,6 +326,25 @@ class FacilityService {
             $data = [
                 'user' => $user
             ];
+        } catch (\Exception $ex) {
+            $errors = 'An error occurred';
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
+    public function get_facility_types() {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        try {
+            $data = FacilityType::all();
+            $success = 1;
         } catch (\Exception $ex) {
             $errors = 'An error occurred';
         }
