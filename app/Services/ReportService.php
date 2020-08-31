@@ -229,97 +229,9 @@ class ReportService {
     public function generate_report_test($facility_id) {
         $this->setDates();
         $this->setFacility($facility_id);
-        $facility_batch = BatchInventory::where('facility_id', $facility_id)->where('status', 1)->with('item')->with('ledger.transfer.supplier')->get()->toArray();
-
-        $coc_pills_data = $this->getData($facility_batch, '1');
-        $pop_pills_data = $this->getData($facility_batch, '2');
-        $dmpa_data = $this->getData($facility_batch, '3');
-        $iud_data = $this->getData($facility_batch, '5');
-        $implant_data = $this->getData($facility_batch, '4');
-        $male_condom_data = $this->getData($facility_batch, '6');
-        $female_condom_data = $this->getData($facility_batch, '7');
 
         $spreadsheet = IOFactory::load(public_path('assets/report.xlsx'));
         $writer = new Xlsx($spreadsheet);
-
-        // set header values
-        $spreadsheet->getActiveSheet()->setCellValue('A4', 'NAME OF FACILITY (RHU/MHC/CHO): ' . strtoupper($this->facility->tpye['type']));
-        $spreadsheet->getActiveSheet()->setCellValue('J4', 'NAME OF PROVINCE: ' . strtoupper($this->facility->province));
-        $spreadsheet->getActiveSheet()->setCellValue('D5', strtoupper($this->start_month) . '-' . strtoupper($this->current_date));
-        $spreadsheet->getActiveSheet()->setCellValue('L5', $this->numberToRomanRepresentation($this->facility->region));
-        $spreadsheet->getActiveSheet()->setCellValue('D6', $this->current_year);
-        // set table months
-        $spreadsheet->getActiveSheet()->setCellValue('H10', strtoupper($this->months[0]->format('F')));
-        $spreadsheet->getActiveSheet()->setCellValue('I10', strtoupper($this->months[1]->format('F')));
-        $spreadsheet->getActiveSheet()->setCellValue('J10', strtoupper($this->months[2]->format('F')));
-        // set coc pills
-        $spreadsheet->getActiveSheet()->setCellValue('B11', $coc_pills_data['starting']);
-        $spreadsheet->getActiveSheet()->setCellValue('C11', $coc_pills_data['received_central']);
-        $spreadsheet->getActiveSheet()->setCellValue('D11', $coc_pills_data['received']);
-        $spreadsheet->getActiveSheet()->setCellValue('E11', $coc_pills_data['additions']);
-        $spreadsheet->getActiveSheet()->setCellValue('F11', $coc_pills_data['subtractions']);
-        $spreadsheet->getActiveSheet()->setCellValue('H11', $coc_pills_data['month1_issued']);
-        $spreadsheet->getActiveSheet()->setCellValue('I11', $coc_pills_data['month2_issued']);
-        $spreadsheet->getActiveSheet()->setCellValue('J11', $coc_pills_data['month3_issued']);
-        // set pop pills
-        $spreadsheet->getActiveSheet()->setCellValue('B12', $pop_pills_data['starting']);
-        $spreadsheet->getActiveSheet()->setCellValue('C12', $pop_pills_data['received_central']);
-        $spreadsheet->getActiveSheet()->setCellValue('D12', $pop_pills_data['received']);
-        $spreadsheet->getActiveSheet()->setCellValue('E12', $pop_pills_data['additions']);
-        $spreadsheet->getActiveSheet()->setCellValue('F12', $pop_pills_data['subtractions']);
-        $spreadsheet->getActiveSheet()->setCellValue('H12', $pop_pills_data['month1_issued']);
-        $spreadsheet->getActiveSheet()->setCellValue('I12', $pop_pills_data['month2_issued']);
-        $spreadsheet->getActiveSheet()->setCellValue('J12', $pop_pills_data['month3_issued']);
-        // set dmpa
-        $spreadsheet->getActiveSheet()->setCellValue('B13', $dmpa_data['starting']);
-        $spreadsheet->getActiveSheet()->setCellValue('C13', $dmpa_data['received_central']);
-        $spreadsheet->getActiveSheet()->setCellValue('D13', $dmpa_data['received']);
-        $spreadsheet->getActiveSheet()->setCellValue('E13', $dmpa_data['additions']);
-        $spreadsheet->getActiveSheet()->setCellValue('F13', $dmpa_data['subtractions']);
-        $spreadsheet->getActiveSheet()->setCellValue('H13', $dmpa_data['month1_issued']);
-        $spreadsheet->getActiveSheet()->setCellValue('I13', $dmpa_data['month2_issued']);
-        $spreadsheet->getActiveSheet()->setCellValue('J13', $dmpa_data['month3_issued']);
-        // set iud
-        $spreadsheet->getActiveSheet()->setCellValue('B14', $iud_data['starting']);
-        $spreadsheet->getActiveSheet()->setCellValue('C14', $iud_data['received_central']);
-        $spreadsheet->getActiveSheet()->setCellValue('D14', $iud_data['received']);
-        $spreadsheet->getActiveSheet()->setCellValue('E14', $iud_data['additions']);
-        $spreadsheet->getActiveSheet()->setCellValue('F14', $iud_data['subtractions']);
-        $spreadsheet->getActiveSheet()->setCellValue('H14', $iud_data['month1_issued']);
-        $spreadsheet->getActiveSheet()->setCellValue('I14', $iud_data['month2_issued']);
-        $spreadsheet->getActiveSheet()->setCellValue('J14', $iud_data['month3_issued']);
-        // set implant
-        $spreadsheet->getActiveSheet()->setCellValue('B15', $implant_data['starting']);
-        $spreadsheet->getActiveSheet()->setCellValue('C15', $implant_data['received_central']);
-        $spreadsheet->getActiveSheet()->setCellValue('D15', $implant_data['received']);
-        $spreadsheet->getActiveSheet()->setCellValue('E15', $implant_data['additions']);
-        $spreadsheet->getActiveSheet()->setCellValue('F15', $implant_data['subtractions']);
-        $spreadsheet->getActiveSheet()->setCellValue('H15', $implant_data['month1_issued']);
-        $spreadsheet->getActiveSheet()->setCellValue('I15', $implant_data['month2_issued']);
-        $spreadsheet->getActiveSheet()->setCellValue('J15', $implant_data['month3_issued']);
-        // set male condom
-        $spreadsheet->getActiveSheet()->setCellValue('B16', $male_condom_data['starting']);
-        $spreadsheet->getActiveSheet()->setCellValue('C16', $male_condom_data['received_central']);
-        $spreadsheet->getActiveSheet()->setCellValue('D16', $male_condom_data['received']);
-        $spreadsheet->getActiveSheet()->setCellValue('E16', $male_condom_data['additions']);
-        $spreadsheet->getActiveSheet()->setCellValue('F16', $male_condom_data['subtractions']);
-        $spreadsheet->getActiveSheet()->setCellValue('H16', $male_condom_data['month1_issued']);
-        $spreadsheet->getActiveSheet()->setCellValue('I16', $male_condom_data['month2_issued']);
-        $spreadsheet->getActiveSheet()->setCellValue('J16', $male_condom_data['month3_issued']);
-        // set male condom
-        $spreadsheet->getActiveSheet()->setCellValue('B17', $female_condom_data['starting']);
-        $spreadsheet->getActiveSheet()->setCellValue('C17', $female_condom_data['received_central']);
-        $spreadsheet->getActiveSheet()->setCellValue('D17', $female_condom_data['received']);
-        $spreadsheet->getActiveSheet()->setCellValue('E17', $female_condom_data['additions']);
-        $spreadsheet->getActiveSheet()->setCellValue('F17', $female_condom_data['subtractions']);
-        $spreadsheet->getActiveSheet()->setCellValue('H17', $female_condom_data['month1_issued']);
-        $spreadsheet->getActiveSheet()->setCellValue('I17', $female_condom_data['month2_issued']);
-        $spreadsheet->getActiveSheet()->setCellValue('J17', $female_condom_data['month3_issued']);
-
-        $date = new Carbon();
-        $filename = $date->format('m-d-Y') . '-' . strtolower(preg_replace("/[\s]/", '-', $this->facility->facility_name)) . '-report.xlsx';
-        $writer->save($this->facility->facility_name . '/' . $filename);
-
-        return $filename;
+        $writer->save('test2.xlsx');
     }
 }
