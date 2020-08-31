@@ -232,6 +232,6 @@ class ReportService {
 
         $spreadsheet = IOFactory::load(public_path('assets/report.xlsx'));
         $writer = new Xlsx($spreadsheet);
-        $writer->save('test2.xlsx');
+        $writer->save('/public/test2.xlsx');
     }
 }
