@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
+use App\Services\ReportService;
 
 class Kernel extends ConsoleKernel
 {
@@ -24,6 +25,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        //
+        $schedule->call(function () {
+            $report = new ReportService();
+            $report->generate_report_test(1);
+        })->everyMinute();
     }
 }

@@ -248,7 +248,8 @@ class FacilityService {
         $longitude,
         $latitude,
         $facility_type,
-        $status
+        $status,
+        $image
     ) {
         $success = 0;
         $errors = [];
@@ -267,6 +268,17 @@ class FacilityService {
                 $facility->facility_type = $facility_type;
                 $facility->status = $status;
                 $facility->updated_by = $this->authenticated_user->id;
+
+                if (! empty($image)) {
+                    $extension = explode('/', mime_content_type($image))[1];
+                    $file_name = Str::random(20) . '.' . $extension;
+
+                    if (file_exists(public_path('images'))) {
+                        file_put_contents(public_path('images') . '/' . $file_name, file_get_contents($image));
+                        $facility->image = $file_name;
+                    }
+                }
+
                 $facility->save();
 
                 $success = 1;
