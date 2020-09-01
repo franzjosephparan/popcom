@@ -168,4 +168,24 @@ class UsersController extends BaseController
             'data' => $response['data']
         ]);
     }
+
+    public function get_user_facilities(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|numeric'
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+        } else {
+            $response = $this->user_service->get_user_facilities(
+                $request->input('user_id')
+            );
+        }
+
+        return response()->json([
+            'success' => $response['success'] ?? 0,
+            'errors' => $response['errors'] ?? $errors,
+            'data' => $response['data']
+        ]);
+    }
 }

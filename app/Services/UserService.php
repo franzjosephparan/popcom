@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\User;
+use App\UserFacility;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -238,6 +239,28 @@ class UserService {
             } else {
                 $errors = 'User does not exist';
             }
+        } catch (\Exception $ex) {
+            $errors = 'An error occurred';
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
+    public function get_user_facilities($user_id) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        try {
+            $facilities = [];
+            $facility = UserFacility::where('user_id', $user_id)->with('facilities')->get();
+
+            $success = 1;
+            $data = $facility;
         } catch (\Exception $ex) {
             $errors = 'An error occurred';
         }
