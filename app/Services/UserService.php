@@ -301,6 +301,27 @@ class UserService {
         ];
     }
 
+    public function remove_user_to_facility($user_id, $facility_id) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        try {
+            $user_facility = UserFacility::where('user_id', $user_id)->where('facility_id', $facility_id)->first();
+            $user_facility->delete();
+
+            $success = 1;
+        } catch (\Exception $ex) {
+            $errors = 'An error occurred';
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
     private function get_user_by_email($email) {
         return User::with('facility')->where('email', $email)->first();
     }

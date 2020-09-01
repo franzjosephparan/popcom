@@ -24,6 +24,7 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
     $router->post('/get-users', ['uses' => 'UsersController@get_users']);
     $router->post('/get-user-facilities', ['uses' => 'UsersController@get_user_facilities']);
     $router->post('/add-user-to-facility', ['uses' => 'UsersController@add_user_to_facility']);
+    $router->post('/remove-user-to-facility', ['uses' => 'UsersController@remove_user_to_facility']);
     // facilities
     $router->post('/create-facility', ['uses' => 'FacilityController@create']);
     $router->post('/edit-facility', ['uses' => 'FacilityController@edit']);
