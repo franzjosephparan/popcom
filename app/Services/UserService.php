@@ -206,6 +206,7 @@ class UserService {
         $last_name,
         $contact_number,
         $email,
+        $password,
         $status
     ) {
         $success = 0;
@@ -220,6 +221,10 @@ class UserService {
                     $user->first_name = $first_name;
                     $user->last_name = $last_name;
                     $user->email = $email;
+
+                    if (! empty($password))
+                        $user->password = Hash::make($password);
+
                     $user->contact_number = $contact_number;
                     $user->status = $status;
                     $user->updated_by = $this->authenticated_user->id;

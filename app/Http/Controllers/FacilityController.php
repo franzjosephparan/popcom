@@ -51,7 +51,9 @@ class FacilityController extends BaseController
                 $request->input('longitude'),
                 $request->input('latitude'),
                 $request->input('facility_type'),
-                $request->input('facility_status')
+                $request->input('facility_status'),
+                $request->input('user_image'),
+                $request->input('facility_image')
             );
         }
 
@@ -177,7 +179,8 @@ class FacilityController extends BaseController
                 $request->input('longitude'),
                 $request->input('latitude'),
                 $request->input('facility_type'),
-                $request->input('status')
+                $request->input('status'),
+                $request->input('image')
             );
         }
 

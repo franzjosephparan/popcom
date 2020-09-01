@@ -11,7 +11,7 @@ class Facility extends Model
     protected $guarded = [];
 
     public function users() {
-        return $this->hasMany('App\User', 'facility_id', 'id');
+        return $this->hasMany('App\UserFacility', 'facility_id', 'id');
     }
 
     public function type() {

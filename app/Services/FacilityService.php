@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\FacilityType;
+use App\UserFacility;
 
 class FacilityService {
     private $authenticated_user;
@@ -31,7 +32,9 @@ class FacilityService {
         $longitude,
         $latitude,
         $facility_type,
-        $facility_status
+        $facility_status,
+        $user_image,
+        $facility_image
     ) {
         $success = 0;
         $errors = [];
@@ -48,10 +51,20 @@ class FacilityService {
             $facility->facility_type = $facility_type;
             $facility->status = $facility_status;
             $facility->created_by = $this->authenticated_user->id;
+
+            if (! empty($facility_image)) {
+                $extension = explode('/', mime_content_type($facility_image))[1];
+                $file_name = Str::random(20) . '.' . $extension;
+
+                if (file_exists(public_path('images'))) {
+                    file_put_contents(public_path('images') . '/' . $file_name, file_get_contents($facility_image));
+                    $facility->image = $file_name;
+                }
+            }
+
             $facility->save();
 
             $user = new User();
-            $user->facility_id = $facility->id;
             $user->first_name = $first_name;
             $user->last_name = $last_name;
             $user->contact_number = $contact_number;
@@ -62,16 +75,21 @@ class FacilityService {
             $user->created_by = $this->authenticated_user->id;
             $user->api_token = Str::random(60);
 
-            if (! empty($image)) {
-                $extension = explode('/', mime_content_type($image))[1];
+            if (! empty($user_image)) {
+                $extension = explode('/', mime_content_type($user_image))[1];
                 $file_name = Str::random(20) . '.' . $extension;
 
                 if (file_exists(public_path('images'))) {
-                    file_put_contents(public_path('images') . '/' . $file_name, file_get_contents($image));
+                    file_put_contents(public_path('images') . '/' . $file_name, file_get_contents($user_image));
                     $user->image = $file_name;
                 }
             }
             $user->save();
+
+            $user_facility = new UserFacility();
+            $user_facility->user_id = $user->id;
+            $user_facility->facility_id = $facility->id;
+            $user_facility->save();
 
             $success = 1;
             $data = [
@@ -79,7 +97,7 @@ class FacilityService {
                 'user' => $user
             ];
         } catch (\Exception $ex) {
-            $errors = 'An error occurred';
+            $errors = $ex->getMessage();
         }
 
         return [
@@ -153,7 +171,7 @@ class FacilityService {
         $data = [];
 
         try {
-            $facility = Facility::where('id', $facility_id)->with('users')->with('type')->get();
+            $facility = Facility::where('id', $facility_id)->with('users.user')->with('type')->get();
             $batches = BatchInventory::where('facility_id', $facility_id)->get()->toArray();
             $inventory_count = 0;
 
@@ -182,7 +200,7 @@ class FacilityService {
                 $errors = 'Facility does not exist';
             }
         } catch (\Exception $ex) {
-            $errors = 'An error occurred';
+            $errors = $ex->getMessage();
         }
 
         return [
@@ -218,16 +236,10 @@ class FacilityService {
         $data = [];
 
         try {
-            $facility = Facility::find($facility_id);
+            $facility = Facility::where('id', $facility_id)->with('users.user')->get();
 
-            if (! empty($facility)) {
-                $users = User::where('facility_id', $facility->id)->get();
-
-                $success = 1;
-                $data = $users;
-            } else {
-                $errors = 'Facility does not exist';
-            }
+            $success = 1;
+            $data = $facility[0];
         } catch (\Exception $ex) {
             $errors = 'An error occurred';
         }
@@ -312,7 +324,6 @@ class FacilityService {
 
         try {
             $user = new User();
-            $user->facility_id = $facility_id;
             $user->first_name = $first_name;
             $user->last_name = $last_name;
             $user->contact_number = $contact_number;
@@ -333,6 +344,11 @@ class FacilityService {
                 }
             }
             $user->save();
+
+            $user_facility = new UserFacility();
+            $user_facility->user_id = $user->id;
+            $user_facility->facility_id = $facility_id;
+            $user_facility->save();
 
             $success = 1;
             $data = [

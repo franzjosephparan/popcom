@@ -86,6 +86,7 @@ class UsersController extends BaseController
                 $request->input('last_name'),
                 $request->input('contact_number'),
                 $request->input('email'),
+                $request->input('password'),
                 $request->input('status')
             );
         }
