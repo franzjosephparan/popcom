@@ -256,11 +256,40 @@ class UserService {
         $data = [];
 
         try {
-            $facilities = [];
             $facility = UserFacility::where('user_id', $user_id)->with('facilities')->get();
 
             $success = 1;
             $data = $facility;
+        } catch (\Exception $ex) {
+            $errors = 'An error occurred';
+        }
+
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $data
+        ];
+    }
+
+    public function add_user_to_facility($user_id, $facility_id) {
+        $success = 0;
+        $errors = [];
+        $data = [];
+
+        try {
+            $user_facility = UserFacility::where('user_id', $user_id)->where('facility_id', $facility_id)->first();
+
+            if (empty($user_facility)) {
+                $user_facility = new UserFacility();
+                $user_facility->user_id = $user_id;
+                $user_facility->facility_id = $facility_id;
+                $user_facility->save();
+
+                $success = 1;
+                $data = $user_facility;
+            } else {
+                $errors = 'User is already in this facility';
+            }
         } catch (\Exception $ex) {
             $errors = 'An error occurred';
         }
