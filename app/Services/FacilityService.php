@@ -216,11 +216,20 @@ class FacilityService {
         $data = [];
 
         try {
-            $facilities = Facility::with('type')->get();
+            $facilities = Facility::with('type')->get()->toArray();
+
+            foreach ($facilities as &$facility) {
+                $facility_users = UserFacility::where('facility_id', $facility['id'])->get()->toArray();
+
+                foreach ($facility_users as $facility_user) {
+                    $facility['users'][] = $facility_user['user_id'];
+                }
+            }
+
             $success = 1;
             $data = $facilities;
         } catch (\Exception $ex) {
-            $errors = 'An error occurred';
+            $errors = $ex->getMessage();
         }
 
         return [
