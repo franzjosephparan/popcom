@@ -37,7 +37,7 @@ class ReportService {
         $writer = new Xlsx($spreadsheet);
 
         // set header values
-        $spreadsheet->getActiveSheet()->setCellValue('A4', 'NAME OF FACILITY (RHU/MHC/CHO): ' . strtoupper($this->facility->tpye['type']));
+        $spreadsheet->getActiveSheet()->setCellValue('A4', 'NAME OF FACILITY (RHU/MHC/CHO): ' . strtoupper($this->facility->type['type']));
         $spreadsheet->getActiveSheet()->setCellValue('J4', 'NAME OF PROVINCE: ' . strtoupper($this->facility->province));
         $spreadsheet->getActiveSheet()->setCellValue('D5', strtoupper($this->start_month) . '-' . strtoupper($this->current_date));
         $spreadsheet->getActiveSheet()->setCellValue('L5', $this->numberToRomanRepresentation($this->facility->region));
