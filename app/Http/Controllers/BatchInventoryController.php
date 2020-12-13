@@ -56,7 +56,8 @@ class BatchInventoryController extends BaseController
         } else {
             $response = $this->batch_service->adjust_inventory(
                 $request->input('batch_id'),
-                $request->input('quantity')
+                $request->input('quantity'),
+                $request->input('expiration_date')
             );
         }
 

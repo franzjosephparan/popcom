@@ -69,7 +69,7 @@ class BatchService {
         ];
     }
 
-    public function adjust_inventory($batch_id, $quantity) {
+    public function adjust_inventory($batch_id, $quantity, $expiration_date = null) {
         $success = 0;
         $errors = [];
         $data = [];
@@ -80,6 +80,10 @@ class BatchService {
             $previous_quant = $batch->quantity;
             $batch->quantity = $quantity;
             $batch->updated_by = $this->authenticated_user->id;
+
+            if (! empty($expiration_date))
+                $batch->expiration_date = Carbon::createFromTimestamp($expiration_date)->toDateTimeString();
+
             $batch->save();
 
             $ledger = new InventoryLedger();
@@ -255,7 +259,7 @@ class BatchService {
             $inventory_request->receiving_facility_id = $receiving_facility_id;
             $inventory_request->supplying_facility_id = $supplying_facility_id;
             $inventory_request->message = $message;
-            $inventory_request->expected_delivery_date = Carbon::createFromTimestamp($expected_delivery_date)->toDateTimeString();;
+            $inventory_request->expected_delivery_date = Carbon::createFromTimestamp($expected_delivery_date)->toDateTimeString();
             $inventory_request->created_by = $this->authenticated_user->id;
             $inventory_request->save();
             $final_data = $inventory_request;
