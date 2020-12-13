@@ -19,6 +19,7 @@ class LedgerService {
                 ->offset($offset)
                 ->limit($limit)
                 ->orderby('created_at', 'desc')
+                ->with('batch')
                 ->with('user')
                 ->with('item')
                 ->with('facility')
